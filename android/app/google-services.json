@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "23398373140",
-    "firebase_url": "https://demodatabaseevent.firebaseio.com",
-    "project_id": "demodatabaseevent",
-    "storage_bucket": "demodatabaseevent.appspot.com"
+    "project_number": "377113070027",
+    "firebase_url": "https://bigree-25070.firebaseio.com",
+    "project_id": "bigree-25070",
+    "storage_bucket": "bigree-25070.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:23398373140:android:9fd1cfac4e923fe53a1401",
+        "mobilesdk_app_id": "1:377113070027:android:579121432d663059600e4e",
         "android_client_info": {
           "package_name": "com.example.event_country"
         }
       },
       "oauth_client": [
         {
-          "client_id": "23398373140-sgsm81145mokhbtt3jm5u3hl50g8csk9.apps.googleusercontent.com",
+          "client_id": "377113070027-00r4331te1a6ea8mn8v14s17fek3rfvv.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAxBHi6yaDLlwyjrpWIHq2uw2b3EUcfyO8"
+          "current_key": "AIzaSyD6XT0wgcrlclitl4I2pGYMsHF9oOvOWtQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "23398373140-sgsm81145mokhbtt3jm5u3hl50g8csk9.apps.googleusercontent.com",
+              "client_id": "377113070027-00r4331te1a6ea8mn8v14s17fek3rfvv.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
