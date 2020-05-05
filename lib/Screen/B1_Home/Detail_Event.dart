@@ -36,6 +36,20 @@ class newsHeaderListDetail extends StatefulWidget {
   _newsListDetailState createState() => _newsListDetailState();
 }
 
+class DividerForm extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+          top: 15.0, left: 25.0, right: 30.0),
+      child: Divider(
+        color: Colors.black12,
+        height: 2.0,
+      ),
+    );
+  }
+}
+
 class _newsListDetailState extends State<newsHeaderListDetail> {
   String _nama, _npm, _photoProfile;
   String _join = "Join";
@@ -229,14 +243,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15.0, left: 25.0, right: 30.0),
-                        child: Divider(
-                          color: Colors.black12,
-                          height: 2.0,
-                        ),
-                      ),
+                      DividerForm(),
                       Padding(
                         padding: const EdgeInsets.only(top: 20.0, left: 20.0),
                         child: Row(
@@ -272,14 +279,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15.0, left: 25.0, right: 30.0),
-                        child: Divider(
-                          color: Colors.black12,
-                          height: 2.0,
-                        ),
-                      ),
+                      DividerForm(),
                       Padding(
                         padding: const EdgeInsets.only(top: 20.0, left: 20.0),
                         child: Row(
@@ -304,14 +304,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15.0, left: 25.0, right: 30.0),
-                        child: Divider(
-                          color: Colors.black12,
-                          height: 2.0,
-                        ),
-                      ),
+                      DividerForm(),
                       Padding(
                           padding: EdgeInsets.only(top: 15.0, bottom: 0.0),
                           child: StreamBuilder(
