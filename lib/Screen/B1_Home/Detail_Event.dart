@@ -36,7 +36,7 @@ class newsHeaderListDetail extends StatefulWidget {
   _newsListDetailState createState() => _newsListDetailState();
 }
 
-class DividerForm extends StatelessWidget {
+class ListDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -45,6 +45,59 @@ class DividerForm extends StatelessWidget {
       child: Divider(
         color: Colors.black12,
         height: 2.0,
+      ),
+    );
+  }
+}
+
+class ListItem extends StatelessWidget {
+
+  String title = '';
+  String subtitle = '';
+  Widget icon_empty =  Icon(
+    Icons.title,
+    color: Colors.transparent,
+  );
+  Widget icon;
+
+  ListItem({
+    @required this.title,
+    this.subtitle,
+    this.icon
+  }) : assert(title != null);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0, left: 20.0),
+      child: Row(
+        children: <Widget>[
+          this.icon == null ? this.icon_empty : this.icon,
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  this.title,
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      fontFamily: "Popins"),
+                ),
+                Text(
+                  this.subtitle,
+                  style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black54),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -208,78 +261,24 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                               fontFamily: "Popins"),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0, left: 20.0),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.calendar_today,
-                              color: Colors.black26,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 15.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    widget.date,
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                        fontFamily: "Popins"),
-                                  ),
-                                  Text(
-                                    widget.time,
-                                    style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black54),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
+                      ListItem(
+                        title: widget.date,
+                        subtitle: widget.time,
+                        icon: Icon(
+                          Icons.calendar_today,
+                          color: Colors.black26,
+                        )
                       ),
-                      DividerForm(),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0, left: 20.0),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.place,
-                              color: Colors.black26,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 15.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    "Location",
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                        fontFamily: "Popins"),
-                                  ),
-                                  Text(
-                                    widget.place,
-                                    style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black54),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
+                      ListDivider(),
+                      ListItem(
+                        title: 'Location', 
+                        subtitle: widget.place,
+                        icon: Icon(
+                          Icons.place,
+                          color: Colors.black26
+                        )
                       ),
-                      DividerForm(),
+                      ListDivider(),
                       Padding(
                         padding: const EdgeInsets.only(top: 20.0, left: 20.0),
                         child: Row(
@@ -304,7 +303,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                           ],
                         ),
                       ),
-                      DividerForm(),
+                      ListDivider(),
                       Padding(
                           padding: EdgeInsets.only(top: 15.0, bottom: 0.0),
                           child: StreamBuilder(
