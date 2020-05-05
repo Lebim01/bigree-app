@@ -103,6 +103,30 @@ class ListItem extends StatelessWidget {
   }
 }
 
+class ListSimpleItem extends StatelessWidget {
+
+  String text;
+
+  ListSimpleItem(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+          top: 10.0, left: 20.0, right: 20.0, bottom: 20.0),
+      child: Text(
+        this.text,
+        style: TextStyle(
+            fontFamily: "Popins",
+            color: Colors.black,
+            fontSize: 15.0,
+            fontWeight: FontWeight.w400),
+        textAlign: TextAlign.justify,
+      ),
+    );
+  }
+}
+
 class _newsListDetailState extends State<newsHeaderListDetail> {
   String _nama, _npm, _photoProfile;
   String _join = "Join";
@@ -341,45 +365,9 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                               fontFamily: "Popins"),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10.0, left: 20.0, right: 20.0, bottom: 20.0),
-                        child: Text(
-                          widget.desc,
-                          style: TextStyle(
-                              fontFamily: "Popins",
-                              color: Colors.black,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w400),
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 20.0, left: 20.0, right: 20.0, bottom: 20.0),
-                        child: Text(
-                          widget.desc2,
-                          style: TextStyle(
-                              fontFamily: "Popins",
-                              color: Colors.black,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w400),
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 20.0, left: 20.0, right: 20.0, bottom: 20.0),
-                        child: Text(
-                          widget.desc3,
-                          style: TextStyle(
-                              fontFamily: "Popins",
-                              color: Colors.black,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w400),
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
+                      ListSimpleItem(widget.desc),
+                      ListSimpleItem(widget.desc2),
+                      ListSimpleItem(widget.desc3),
                       SizedBox(
                         height: 100.0,
                       )
