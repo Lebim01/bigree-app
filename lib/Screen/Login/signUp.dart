@@ -56,14 +56,16 @@ class _signUpState extends State<signUp> {
   ///
   Future selectPhoto() async {
     tempImage = await ImagePicker.pickImage(source: ImageSource.gallery);
+    
+    if(tempImage != null){
+      setState(() {
+        selectedImage = tempImage;
+        filename = basename(selectedImage.path);
+        uploadImage();
 
-    setState(() {
-      selectedImage = tempImage;
-      filename = basename(selectedImage.path);
-      uploadImage();
-
-      retrieveLostData();
-    });
+        retrieveLostData();
+      });
+    }
   }
 
   ///
