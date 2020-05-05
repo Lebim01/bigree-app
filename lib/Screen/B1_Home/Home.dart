@@ -12,6 +12,10 @@ import 'Detail_Event.dart';
 import 'Home_Search/search_page.dart';
 import 'allPopularEvent.dart';
 
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
+
 ///
 /// Intro if user open first apps
 ///
@@ -115,7 +119,7 @@ class _HomeState extends State<Home> {
             width: 10.0,
           ),
           Text(
-            "Find on event",
+            lang.findEvent,
             style: TextStyle(
                 fontFamily: "Sofia",
                 fontWeight: FontWeight.w400,
@@ -165,7 +169,7 @@ class _HomeState extends State<Home> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: Text(
-            "Event",
+            lang.event,
             style: TextStyle(
                 fontFamily: "Sofia",
                 fontWeight: FontWeight.w800,
@@ -206,7 +210,7 @@ class _HomeState extends State<Home> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text("Popular Events",
+                      Text(lang.popularEvents,
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontFamily: "Sofia",
@@ -217,7 +221,7 @@ class _HomeState extends State<Home> {
                                 pageBuilder: (_, __, ___) =>
                                     new allPopularEvents()));
                           },
-                          child: Text("View all",
+                          child: Text(lang.viewAll,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontFamily: "Sofia",
@@ -331,7 +335,7 @@ class search extends StatelessWidget {
                 width: 10.0,
               ),
               Text(
-                "Find on event",
+                lang.findEvent,
                 style: TextStyle(
                     fontFamily: "Sofia",
                     fontWeight: FontWeight.w400,
