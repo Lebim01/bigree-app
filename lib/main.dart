@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Screen/Bottom_Nav_Bar/bottomNavBar.dart';
 import 'Screen/Login/OnBoarding.dart';
 import 'dart:io' show Platform;
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 /// Run first apps open
 void main() {
@@ -20,6 +21,27 @@ void main() {
 class myApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    final HttpLink httpLink = HttpLink(
+      uri: 'http://datatecblocks.xyz:4004/graphql',
+    );
+
+    final AuthLink authLink = AuthLink(
+      getToken: () async => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
+      // OR
+      // getToken: () => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
+    );
+
+    final Link link = authLink.concat(httpLink);
+
+    ValueNotifier<GraphQLClient> client = ValueNotifier(
+      GraphQLClient(
+        cache: InMemoryCache(),
+        link: link,
+      ),
+    );
+
+
     /// To set orientation always portrait
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -30,22 +52,25 @@ class myApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent, //or set color with: Color(0xFF0000FF)
     ));
-    return new MaterialApp(
-      title: "Event Country",
-      theme: ThemeData(
-          brightness: Brightness.light,
-          backgroundColor: Colors.white,
-          primaryColorLight: Colors.white,
-          primaryColorBrightness: Brightness.light,
-          primaryColor: Colors.white),
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+    return new GraphQLProvider(
+      client: client,
+      child: MaterialApp(
+        title: "Event Country",
+        theme: ThemeData(
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
+            primaryColorLight: Colors.white,
+            primaryColorBrightness: Brightness.light,
+            primaryColor: Colors.white),
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen(),
 
-      /// Move splash screen to ChoseLogin Layout
-      /// Routes
-      routes: <String, WidgetBuilder>{
-        "login": (BuildContext context) => new SplashScreen()
-      },
+        /// Move splash screen to ChoseLogin Layout
+        /// Routes
+        routes: <String, WidgetBuilder>{
+          "login": (BuildContext context) => new SplashScreen()
+        },
+      )
     );
   }
 }

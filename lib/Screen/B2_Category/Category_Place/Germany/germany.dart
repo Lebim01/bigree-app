@@ -1,14 +1,11 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_country/Library/bubbleTabCustom/bubbleTab.dart';
 import 'package:event_country/Screen/B1_Home/Home_Search/search_page.dart';
 import 'package:event_country/Screen/B2_Category/Category_Place/Germany/category/artGermany.dart';
 import 'package:event_country/Screen/B2_Category/Category_Place/Germany/category/musicGermany.dart';
 import 'package:event_country/Screen/B2_Category/Category_Place/Germany/category/sportGermany.dart';
-import 'package:event_country/Screen/B2_Category/Page_Transformer_Card/page_transformer.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 
 import 'category/allGermany.dart';
 
@@ -152,9 +149,9 @@ class _germanyState extends State<germany> {
                   child: InkWell(
                       onTap: () {
                         Navigator.of(context).push(PageRouteBuilder(
-                            pageBuilder: (_, __, ___) => new searchPage(
-                                  idUser: widget.userId,
-                                )));
+                            pageBuilder: (_, __, ___) => new searchPage()
+                          )
+                        );
                       },
                       child: Icon(
                         Icons.search,

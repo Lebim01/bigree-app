@@ -13,10 +13,6 @@ import '../../../utils/lang/lang.dart' as Lang;
 final lang = Lang.Lang();
 
 class searchPage extends StatefulWidget {
-  String idUser;
-
-  searchPage({this.idUser});
-
   _searchPageState createState() => _searchPageState();
 }
 
@@ -131,13 +127,9 @@ class _searchPageState extends State<searchPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 if (searchString == null)
-                  return searchBoxEmpty(
-                    idUser: widget.idUser,
-                  );
+                  return searchBoxEmpty();
                 if (searchString.trim() == "")
-                  return searchBoxEmpty(
-                    idUser: widget.idUser,
-                  );
+                  return searchBoxEmpty();
                 if (snapshot.data.documents.isEmpty) return noItem();
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
@@ -177,8 +169,6 @@ class _searchPageState extends State<searchPage> {
                                         place: document['place'],
                                         title: document['title'],
                                         id: document['id'],
-                                        userId: widget.idUser,
-                                      
                                       ),
                                   transitionDuration:
                                       Duration(milliseconds: 600),

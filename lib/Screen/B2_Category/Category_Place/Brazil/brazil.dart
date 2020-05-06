@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_country/Library/bubbleTabCustom/bubbleTab.dart';
 import 'package:event_country/Screen/B1_Home/Home_Search/search_page.dart';
 import 'package:event_country/Screen/B2_Category/Category_Place/Brazil/category/allBrazil.dart';
@@ -8,7 +5,6 @@ import 'package:event_country/Screen/B2_Category/Category_Place/Brazil/category/
 import 'package:event_country/Screen/B2_Category/Category_Place/Brazil/category/musicBrazil.dart';
 import 'package:event_country/Screen/B2_Category/Category_Place/Brazil/category/sportBrazil.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 
 class brazil extends StatefulWidget {
   String userId;
@@ -150,9 +146,9 @@ class _brazilState extends State<brazil> {
                   child: InkWell(
                       onTap: () {
                         Navigator.of(context).push(PageRouteBuilder(
-                            pageBuilder: (_, __, ___) => new searchPage(
-                                  idUser: widget.userId,
-                                )));
+                            pageBuilder: (_, __, ___) => new searchPage()
+                          )
+                        );
                       },
                       child: Icon(
                         Icons.search,

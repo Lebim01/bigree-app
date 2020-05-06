@@ -653,10 +653,8 @@ class _signUpState extends State<signUp> {
                                   child: InkWell(
                                     onTap: () async {
                                       SharedPreferences prefs;
-                                      prefs =
-                                          await SharedPreferences.getInstance();
-                                      final formState =
-                                          _registerFormKey.currentState;
+                                      prefs = await SharedPreferences.getInstance();
+                                      final formState = _registerFormKey.currentState;
                                       if (formState.validate()) {
                                         formState.save();
                                         setState(() {
@@ -672,62 +670,67 @@ class _signUpState extends State<signUp> {
                                           prefs.setString("username", _name);
                                           prefs.setString("email", _email);
                                           prefs.setString("country", _country);
-                                          prefs.setString("photoURL",
-                                              profilePicUrl.toString());
+                                          prefs.setString("photoURL", profilePicUrl.toString());
                                           prefs.setString("city", _city);
-                                          
-                                            FirebaseAuth.instance
-                                                .createUserWithEmailAndPassword(
-                                                    email: signupEmailController
-                                                        .text,
-                                                    password:
-                                                        signupPasswordController
-                                                            .text)
-                                                .then((currentUser) => Firestore
-                                                    .instance
-                                                    .collection("users")
-                                                    .document(currentUser.uid)
-                                                    .setData({
-                                                      "uid": currentUser.uid,
-                                                      "name":
-                                                          signupNameController
-                                                              .text,
-                                                      "email":
-                                                          signupEmailController
-                                                              .text,
-                                                      "password":
-                                                          signupPasswordController
-                                                              .text,
-                                                      "country":
-                                                          signupCountryController
-                                                              .text,
-                                                      "city":
-                                                          signupCityController
-                                                              .text,
-                                                      "photoProfile":
-                                                          profilePicUrl
-                                                              .toString(),
-                                                    })
-                                                    .then((result) => {
-                                                          Navigator.of(context).pushReplacement(
-                                                              PageRouteBuilder(
-                                                                  pageBuilder: (_,
-                                                                          __,
-                                                                          ___) =>
-                                                                      new bottomNavBar(
-                                                                        idUser:
-                                                                            currentUser.uid,
-                                                                      ))),
-                                                        })
-                                                    .catchError(
-                                                        (err) => print(err)))
-                                                .catchError(
-                                                    (err) => print(err));
-                                         
+
+                                          FirebaseUser currentUser;
+                                          currentUser = await FirebaseAuth.instance
+                                            .createUserWithEmailAndPassword(
+                                                email: signupEmailController.text.trim(),
+                                                password: signupPasswordController.text.trim()
+                                            );
+
+                                          Firestore
+                                              .instance
+                                              .collection("users")
+                                              .document(currentUser.uid)
+                                              .setData({
+                                                "uid": currentUser.uid,
+                                                "name": signupNameController.text,
+                                                "email": signupEmailController.text,
+                                                "password": signupPasswordController.text,
+                                                "country": signupCountryController.text,
+                                                "city": signupCityController.text,
+                                                "photoProfile": profilePicUrl.toString(),
+                                              })
+                                              .then((result) => {
+                                                Navigator.of(context).pushReplacement(
+                                                    PageRouteBuilder(
+                                                      pageBuilder: (_, __, ___) =>
+                                                        new bottomNavBar(
+                                                          idUser: currentUser.uid,
+                                                        )
+                                                    )
+                                                  ),
+                                                }
+                                              )
+                                              .catchError((err) => print(err));
                                         } catch (e) {
                                           print(e.message);
                                           print(_email);
                                           print(_pass);
+
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text("SignUp Failed"),
+                                                content: Text(e.message),
+                                                actions: <Widget>[
+                                                  FlatButton(
+                                                    child: Text("Close"),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  )
+                                                ],
+                                              );
+                                            }
+                                          );
+                                        } finally {
+                                          setState(() {
+                                            isLoading = false;
+                                          });
                                         }
                                       } else {
                                         showDialog(
@@ -741,8 +744,7 @@ class _signUpState extends State<signUp> {
                                                   FlatButton(
                                                     child: Text("Close"),
                                                     onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
+                                                      Navigator.of(context).pop();
                                                     },
                                                   )
                                                 ],

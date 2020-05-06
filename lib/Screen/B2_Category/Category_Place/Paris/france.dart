@@ -7,7 +7,6 @@ import 'package:event_country/Screen/B2_Category/Category_Place/Paris/category/a
 import 'package:event_country/Screen/B2_Category/Category_Place/Paris/category/artFrance.dart';
 import 'package:event_country/Screen/B2_Category/Category_Place/Paris/category/musicFrance.dart';
 import 'package:event_country/Screen/B2_Category/Category_Place/Paris/category/sportFrance.dart';
-import 'package:event_country/Screen/B2_Category/Page_Transformer_Card/page_transformer.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -154,9 +153,9 @@ class _franceState extends State<france> {
                   child: InkWell(
                       onTap: () {
                         Navigator.of(context).push(PageRouteBuilder(
-                            pageBuilder: (_, __, ___) => new searchPage(
-                                  idUser: widget.userId,
-                                )));
+                            pageBuilder: (_, __, ___) => new searchPage()
+                          )
+                        );
                       },
                       child: Icon(
                         Icons.search,

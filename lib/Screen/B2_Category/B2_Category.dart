@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'Category_Place/Brazil/brazil.dart';
 import 'Category_Place/Paris/france.dart';
 
-import '../../utils/lang/lang.dart' as Lang;
+import 'package:event_country/utils/widgets/searchEvent.dart' as SearchEventWidget;
+import 'package:event_country/utils/lang/lang.dart' as Lang;
 
 final lang = Lang.Lang();
 
@@ -40,9 +41,9 @@ class _CategoryState extends State<Category> {
         InkWell(
           onTap: () {
             Navigator.of(context).push(PageRouteBuilder(
-                pageBuilder: (_, __, ___) => new searchPage(
-                      idUser: widget.userId,
-                    )));
+                pageBuilder: (_, __, ___) => new searchPage()
+              )
+            );
           },
           child: Padding(
             padding: const EdgeInsets.only(right: 20.0, left: 20.0),

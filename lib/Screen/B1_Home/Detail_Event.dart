@@ -130,6 +130,97 @@ class ListSimpleItem extends StatelessWidget {
   }
 }
 
+class BubblePeopleEvent extends StatelessWidget {
+
+  String idEvent;
+
+  BubblePeopleEvent(
+    this.idEvent
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 15.0, bottom: 0.0),
+      child: StreamBuilder(
+        stream: Firestore.instance
+            .collection("JoinEvent")
+            .document("user")
+            .collection(this.idEvent)
+            .snapshots(),
+        builder: (BuildContext ctx,
+            AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          } else {
+            return new joinEvent(
+                list: snapshot.data.documents);
+          }
+        },
+      )
+    );
+  }
+}
+
+class ButtonPay extends StatelessWidget {
+
+  String idEvent;
+  String userId;
+
+  ButtonPay(this.idEvent, this.userId);
+
+  @override
+  Widget build(BuildContext context) {
+    String _join = lang.join;
+
+    void addData() {
+      Firestore.instance.runTransaction((Transaction transaction) async {
+        Firestore.instance
+          .collection('users')
+          .document(this.userId)
+          .get()
+          .then((user) => {
+            
+          });
+        Firestore.instance
+            .collection("JoinEvent")
+            .document("user")
+            .collection(this.idEvent)
+            .document(this.userId)
+            .setData({
+              "npm": this.userId,
+            });
+      });
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 20.0),
+      child: InkWell(
+        onTap: () async {
+          addData();
+        },
+        child: Container(
+          height: 50.0,
+          width: 180.0,
+          decoration: BoxDecoration(
+              color: Colors.deepPurpleAccent,
+              borderRadius:
+                  BorderRadius.all(Radius.circular(40.0))),
+          child: Center(
+            child: Text(
+              _join,
+              style: TextStyle(
+                  fontFamily: "Popins",
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _newsListDetailState extends State<newsHeaderListDetail> {
   String _nama, _npm, _photoProfile;
   String _join = lang.join;
@@ -195,47 +286,6 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
 
   @override
   Widget build(BuildContext context) {
-    void addData() {
-      Firestore.instance.runTransaction((Transaction transaction) async {
-        Firestore.instance
-            .collection("JoinEvent")
-            .document("user")
-            .collection(widget.title)
-            .document(widget.userId)
-            .setData({
-          "nama": _nama,
-          "npm": widget.userId,
-          "photoProfile": _photoProfile
-        });
-      });
-    }
-
-    void userSaved() {
-      Firestore.instance.runTransaction((Transaction transaction) async {
-        SharedPreferences prefs;
-        prefs = await SharedPreferences.getInstance();
-        Firestore.instance
-            .collection("users")
-            .document(widget.userId)
-            .collection('Join Event')
-            .add({
-          "user": widget.userId,
-          "title": widget.title,
-          "category": widget.category,
-          "imageUrl": widget.imageUrl,
-          "desc1": widget.desc,
-          "desc2": widget.desc2,
-          "desc3": widget.desc3,
-          "price": widget.price,
-          "time": widget.time,
-          "date": widget.date,
-          "id": widget.id,
-          "place": widget.place
-        });
-      });
-      Navigator.pop(context);
-    }
-
     double _height = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -331,24 +381,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                         ),
                       ),
                       ListDivider(),
-                      Padding(
-                          padding: EdgeInsets.only(top: 15.0, bottom: 0.0),
-                          child: StreamBuilder(
-                            stream: Firestore.instance
-                                .collection("JoinEvent")
-                                .document("user")
-                                .collection(widget.title)
-                                .snapshots(),
-                            builder: (BuildContext ctx,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (!snapshot.hasData) {
-                                return CircularProgressIndicator();
-                              } else {
-                                return new joinEvent(
-                                    list: snapshot.data.documents);
-                              }
-                            },
-                          )),
+                      BubblePeopleEvent(widget.id),
                       SizedBox(
                         height: 30.0,
                       ),
@@ -397,45 +430,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                             fontFamily: "Popins"),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: InkWell(
-                        onTap: () async {
-                          SharedPreferences prefs;
-                          prefs = await SharedPreferences.getInstance();
-                          _check();
-                          if (prefs.getString(widget.title) == null) {
-                            setState(() {
-                              _join = lang.joined;
-                            });
-
-                            addData();
-                            userSaved();
-                          } else {
-                            setState(() {
-                              _join = lang.joined;
-                            });
-                          }
-                        },
-                        child: Container(
-                          height: 50.0,
-                          width: 180.0,
-                          decoration: BoxDecoration(
-                              color: Colors.deepPurpleAccent,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(40.0))),
-                          child: Center(
-                            child: Text(
-                              _join,
-                              style: TextStyle(
-                                  fontFamily: "Popins",
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
+                    ButtonPay(widget.id, widget.userId)
                   ],
                 ),
               ),

@@ -341,10 +341,8 @@ class _loginState extends State<login> {
                                   child: InkWell(
                                     onTap: () async {
                                       SharedPreferences prefs;
-                                      prefs =
-                                          await SharedPreferences.getInstance();
-                                      final formState =
-                                          _registerFormKey.currentState;
+                                      prefs = await SharedPreferences.getInstance();
+                                      final formState = _registerFormKey.currentState;
                                       FirebaseUser user;
                                       if (formState.validate()) {
                                         formState.save();
@@ -353,9 +351,9 @@ class _loginState extends State<login> {
                                           prefs.setString("id", _id);
                                           user = await FirebaseAuth.instance
                                               .signInWithEmailAndPassword(
-                                            email: _email,
-                                            password: _pass,
-                                          );
+                                                email: _email.toString().trim(),
+                                                password: _pass.toString().trim(),
+                                              );
 
                                           setState(() {
                                             isLoading = true;
@@ -367,8 +365,25 @@ class _loginState extends State<login> {
                                           CircularProgressIndicator();
                                           print(e.message);
                                           print(_email);
-
                                           print(_pass);
+
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text("Login Failed"),
+                                                content: Text(e.message),
+                                                actions: <Widget>[
+                                                  FlatButton(
+                                                    child: Text("Close"),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  )
+                                                ],
+                                              );
+                                            }
+                                          );
                                         } finally {
                                           if (user != null) {
                                             user = await FirebaseAuth.instance
@@ -397,26 +412,6 @@ class _loginState extends State<login> {
                                                         (err) => print(err)))
                                                 .catchError(
                                                     (err) => print(err));
-                                          } else {
-                                            showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: Text("Login Failed"),
-                                                    content: Text(
-                                                        "Please check your password and try again!"),
-                                                    actions: <Widget>[
-                                                      FlatButton(
-                                                        child: Text("Close"),
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                      )
-                                                    ],
-                                                  );
-                                                });
                                           }
                                         }
                                       } else {
@@ -425,8 +420,7 @@ class _loginState extends State<login> {
                                             builder: (BuildContext context) {
                                               return AlertDialog(
                                                 title: Text("Error"),
-                                                content: Text(
-                                                    "Please check your email and password"),
+                                                content: Text("Please check your email and password"),
                                                 actions: <Widget>[
                                                   FlatButton(
                                                     child: Text("Close"),

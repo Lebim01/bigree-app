@@ -152,9 +152,9 @@ class _unitedStatesState extends State<unitedStates> {
                   child: InkWell(
                       onTap: () {
                         Navigator.of(context).push(PageRouteBuilder(
-                            pageBuilder: (_, __, ___) => new searchPage(
-                                  idUser: widget.userId,
-                                )));
+                            pageBuilder: (_, __, ___) => new searchPage()
+                          )
+                        );
                       },
                       child: Icon(
                         Icons.search,

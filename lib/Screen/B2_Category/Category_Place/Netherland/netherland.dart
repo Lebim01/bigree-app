@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_country/Library/bubbleTabCustom/bubbleTab.dart';
 import 'package:event_country/Screen/B1_Home/Home_Search/search_page.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 
 import 'category/allNetherland.dart';
 import 'category/artNetherland.dart';
@@ -151,9 +149,9 @@ class _netherlandState extends State<netherland> {
                   child: InkWell(
                       onTap: () {
                         Navigator.of(context).push(PageRouteBuilder(
-                            pageBuilder: (_, __, ___) => new searchPage(
-                                  idUser: widget.userId,
-                                )));
+                            pageBuilder: (_, __, ___) => new searchPage()
+                          )
+                        );
                       },
                       child: Icon(
                         Icons.search,
