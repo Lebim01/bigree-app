@@ -7,6 +7,10 @@ import 'package:shimmer/shimmer.dart';
 
 import 'Detail_Event.dart';
 
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
+
 class allPopularEvents extends StatefulWidget {
   String userId;
   allPopularEvents({Key key, this.userId}) : super(key: key);
@@ -42,7 +46,7 @@ class _allPopularEventsState extends State<allPopularEvents> {
       title: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0),
         child: Text(
-          "All Events",
+          lang.allEvents,
           style: TextStyle(
               fontFamily: "Gotik",
               fontSize: 20.0,

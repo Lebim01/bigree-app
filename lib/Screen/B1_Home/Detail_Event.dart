@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:giffy_dialog/giffy_dialog.dart';
+
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
 
 class newsHeaderListDetail extends StatefulWidget {
   final String title,
@@ -129,7 +132,7 @@ class ListSimpleItem extends StatelessWidget {
 
 class _newsListDetailState extends State<newsHeaderListDetail> {
   String _nama, _npm, _photoProfile;
-  String _join = "Join";
+  String _join = lang.join;
 
   void _getData() {
     StreamBuilder(
@@ -167,11 +170,11 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
     prefs = await SharedPreferences.getInstance();
     if (prefs.getString(widget.title) == null) {
       setState(() {
-        _join = "Join";
+        _join = lang.join;
       });
     } else {
       setState(() {
-        _join = "Joined";
+        _join = lang.joined;
       });
     }
   }
@@ -295,7 +298,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                       ),
                       ListDivider(),
                       ListItem(
-                        title: 'Location', 
+                        title: lang.location, 
                         subtitle: widget.place,
                         icon: Icon(
                           Icons.place,
@@ -357,7 +360,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                       Padding(
                         padding: EdgeInsets.only(top: 30.0, left: 20.0),
                         child: Text(
-                          "About",
+                          lang.about,
                           style: TextStyle(
                               fontSize: 19.0,
                               fontWeight: FontWeight.w600,
@@ -403,14 +406,14 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                           _check();
                           if (prefs.getString(widget.title) == null) {
                             setState(() {
-                              _join = "Joined";
+                              _join = lang.joined;
                             });
 
                             addData();
                             userSaved();
                           } else {
                             setState(() {
-                              _join = "Joined";
+                              _join = lang.joined;
                             });
                           }
                         },
@@ -568,7 +571,7 @@ class MySliverAppBar extends SliverPersistentHeaderDelegate {
               child: Container(
                 width: 250.0,
                 child: Text(
-                  "Event",
+                  lang.event,
                   style: TextStyle(
                     color: Colors.black54,
                     fontFamily: "Poppins",

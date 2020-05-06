@@ -8,6 +8,10 @@ import 'package:shimmer/shimmer.dart';
 
 import 'Manage_Event_Detail.dart';
 
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
+
 class favorite extends StatefulWidget {
   String uid;
   favorite({this.uid});
@@ -61,7 +65,7 @@ class _favoriteState extends State<favorite> {
         title: Padding(
           padding: const EdgeInsets.only(top: 15.0),
           child: Text(
-            "Manage Event",
+            lang.manageEvent,
             style: TextStyle(
               fontFamily: "Popins",
               letterSpacing: 1.5,

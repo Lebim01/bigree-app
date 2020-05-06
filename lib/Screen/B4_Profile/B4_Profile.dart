@@ -8,6 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'B4_About_Apps.dart';
 import 'B4_Call_Center.dart';
 
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
+
 class profile extends StatefulWidget {
   String uid;
   profile({this.uid});
@@ -206,7 +210,7 @@ class _profileState extends State<profile> {
                   Padding(
                     padding: const EdgeInsets.only(top: 205.0),
                     child: category(
-                      txt: "Edit Profile",
+                      txt: lang.editProfile,
                       padding: 30.0,
                       image: "assets/icon/editProfile.png",
                       tap: () {
@@ -308,7 +312,7 @@ class _profileState extends State<profile> {
                           ),
                         ),
                         category(
-                          txt: "Logout",
+                          txt: lang.logout,
                           padding: 30.0,
                           image: "assets/icon/logout.png",
                           tap: () {

@@ -5,10 +5,12 @@ import 'package:event_country/Library/loader_animation/dot.dart';
 import 'package:event_country/Library/loader_animation/loader.dart';
 import 'package:event_country/Screen/B1_Home/Home_Search/searchBoxEmpty.dart';
 import 'package:flutter/material.dart';
-import 'package:async/async.dart';
 
 import '../Detail_Event.dart';
-import 'Search_Detail_Home.dart';
+
+import '../../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
 
 class searchPage extends StatefulWidget {
   String idUser;
@@ -44,7 +46,7 @@ class _searchPageState extends State<searchPage> {
           color: Colors.deepPurpleAccent,
         ),
         title: Text(
-          "Search",
+          lang.search,
           style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 19.0,
@@ -64,7 +66,7 @@ class _searchPageState extends State<searchPage> {
               padding:
                   const EdgeInsets.only(top: 25.0, left: 20.0, right: 50.0),
               child: Text(
-                "What would you like to search ?",
+                lang.whatWouldSearch,
                 style: TextStyle(
                     letterSpacing: 0.1,
                     fontWeight: FontWeight.w600,
@@ -108,7 +110,7 @@ class _searchPageState extends State<searchPage> {
                               color: Colors.black38,
                               size: 28.0,
                             ),
-                            hintText: "Search",
+                            hintText: lang.search,
                             hintStyle: TextStyle(
                                 color: Colors.black38,
                                 fontFamily: "Sofia",

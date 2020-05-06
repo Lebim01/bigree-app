@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 import 'Category_Place/Brazil/brazil.dart';
 import 'Category_Place/Paris/france.dart';
 
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
+
 class Category extends StatefulWidget {
   String userId;
   Category({this.userId});
@@ -24,7 +28,7 @@ class _CategoryState extends State<Category> {
       title: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0),
         child: Text(
-          "Category",
+          lang.category,
           style: TextStyle(
               fontFamily: "Gotik",
               fontSize: 20.0,

@@ -1,13 +1,27 @@
 import './es.dart' as Es;
 
 class Language {
+  String logout;
   // event
+  String allEvents;
   String event;
   String popularEvents;
   String viewAll;
   String findEvent;
+  String about;
+  String join;
+  String joined;
   // profile
   String profile;
+  String editProfile;
+  // search
+  String search;
+  String whatWouldSearch;
+  // category
+  String category;
+  // Manage event
+  String manageEvent;
+  String location;
 }
 
 class Lang implements Language {
@@ -22,6 +36,17 @@ class Lang implements Language {
     this.popularEvents = lang.popularEvents;
     this.profile = lang.profile;
     this.viewAll = lang.viewAll;
+    this.whatWouldSearch = lang.whatWouldSearch;
+    this.search = lang.search;
+    this.category = lang.category;
+    this.manageEvent = lang.manageEvent;
+    this.editProfile = lang.editProfile;
+    this.logout = lang.logout;
+    this.allEvents = lang.allEvents;
+    this.location = lang.location;
+    this.about = lang.about;
+    this.joined = lang.joined;
+    this.join = lang.join;
   }
 
   @override
@@ -38,4 +63,37 @@ class Lang implements Language {
 
   @override
   String viewAll;
+
+  @override
+  String whatWouldSearch;
+
+  @override
+  String search;
+
+  @override
+  String category;
+
+  @override
+  String manageEvent;
+
+  @override
+  String editProfile;
+
+  @override
+  String logout;
+
+  @override
+  String allEvents;
+
+  @override
+  String location;
+
+  @override
+  String about;
+
+  @override
+  String joined;
+
+  @override
+  String join;
 }
