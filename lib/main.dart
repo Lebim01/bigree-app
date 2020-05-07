@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:event_country/Screen/B3_Manage_Event/Create_Event.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,7 +69,8 @@ class myApp extends StatelessWidget {
         /// Move splash screen to ChoseLogin Layout
         /// Routes
         routes: <String, WidgetBuilder>{
-          "login": (BuildContext context) => new SplashScreen()
+          "login": (BuildContext context) => new SplashScreen(),
+          "createEvent": (BuildContext context) => new createEvent() 
         },
       )
     );

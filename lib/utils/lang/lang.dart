@@ -11,6 +11,7 @@ class Language {
   String about;
   String join;
   String joined;
+  String createdEvent;
   // profile
   String profile;
   String editProfile;
@@ -47,6 +48,7 @@ class Lang implements Language {
     this.about = lang.about;
     this.joined = lang.joined;
     this.join = lang.join;
+    this.createdEvent = lang.createdEvent;
   }
 
   @override
@@ -96,4 +98,8 @@ class Lang implements Language {
 
   @override
   String join;
+
+  @override
+  String createdEvent; 
+
 }

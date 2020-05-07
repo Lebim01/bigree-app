@@ -14,6 +14,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
 
+import 'package:event_country/utils/widgets/alert.dart' as alert;
+
 class signUp extends StatefulWidget {
   @override
   _signUpState createState() => _signUpState();
@@ -549,52 +551,52 @@ class _signUpState extends State<signUp> {
                                         SizedBox(
                                           height: 10.0,
                                         ),
-                                        // Text("Re-Password",
-                                        //     style: TextStyle(
-                                        //         fontFamily: "Sofia",
-                                        //         fontSize:
-                                        //             ScreenUtil.getInstance()
-                                        //                 .setSp(30),
-                                        //         letterSpacing: .9,
-                                        //         fontWeight: FontWeight.w600)),
-                                        // TextFormField(
-                                        //   controller:
-                                        //       signupConfirmPasswordController,
-                                        //   obscureText:
-                                        //       _obscureTextSignupConfirm,
-                                        //   validator: (input) {
-                                        //     if (input.isEmpty) {
-                                        //       return 'Please re-input your password';
-                                        //     }
-                                        //   },
-                                        //   onSaved: (input) => _pass2 = input,
-                                        //   style: TextStyle(
-                                        //       fontFamily: "WorkSofiaSemiBold",
-                                        //       fontSize: 16.0,
-                                        //       color: Colors.black45),
-                                        //   decoration: InputDecoration(
-                                        //     border: InputBorder.none,
-                                        //     icon: Icon(
-                                        //       FontAwesomeIcons.lock,
-                                        //       color: Colors.black45,
-                                        //       size: 18.0,
-                                        //     ),
-                                        //     hintText: "Password",
-                                        //     hintStyle: TextStyle(
-                                        //         fontFamily: "Sofia",
-                                        //         fontSize: 16.0),
-                                        //     suffixIcon: GestureDetector(
-                                        //       onTap: () {
-                                        //         _toggleSignupConfirm();
-                                        //       },
-                                        //       child: Icon(
-                                        //         FontAwesomeIcons.eye,
-                                        //         size: 15.0,
-                                        //         color: Colors.black,
-                                        //       ),
-                                        //     ),
-                                        //   ),
-                                        // ),
+                                        Text("Repeat Password",
+                                            style: TextStyle(
+                                                fontFamily: "Sofia",
+                                                fontSize:
+                                                    ScreenUtil.getInstance()
+                                                        .setSp(30),
+                                                letterSpacing: .9,
+                                                fontWeight: FontWeight.w600)),
+                                        TextFormField(
+                                          controller:
+                                              signupConfirmPasswordController,
+                                          obscureText:
+                                              _obscureTextSignupConfirm,
+                                          validator: (input) {
+                                            if (input.isEmpty) {
+                                              return 'Please re-input your password';
+                                            }
+                                          },
+                                          onSaved: (input) => _pass2 = input,
+                                          style: TextStyle(
+                                              fontFamily: "WorkSofiaSemiBold",
+                                              fontSize: 16.0,
+                                              color: Colors.black45),
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            icon: Icon(
+                                              FontAwesomeIcons.lock,
+                                              color: Colors.black45,
+                                              size: 18.0,
+                                            ),
+                                            hintText: "Password",
+                                            hintStyle: TextStyle(
+                                                fontFamily: "Sofia",
+                                                fontSize: 16.0),
+                                            suffixIcon: GestureDetector(
+                                              onTap: () {
+                                                _toggleSignupConfirm();
+                                              },
+                                              child: Icon(
+                                                FontAwesomeIcons.eye,
+                                                size: 15.0,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                         SizedBox(
                                           height: ScreenUtil.getInstance()
                                               .setHeight(35),
@@ -657,7 +659,10 @@ class _signUpState extends State<signUp> {
                                       final formState = _registerFormKey.currentState;
                                       if (formState.validate()) {
                                         formState.save();
-                                        setState(() {
+                                        if(_pass != _pass2){
+                                          alert.alert.mostrarAlert(context, 'Password do not match');
+                                        }else{
+                                          setState(() {
                                           isLoading = true;
                                         });
                                         try {
@@ -727,11 +732,13 @@ class _signUpState extends State<signUp> {
                                               );
                                             }
                                           );
-                                        } finally {
-                                          setState(() {
-                                            isLoading = false;
-                                          });
+                                          } finally {
+                                              setState(() {
+                                              isLoading = false;
+                                              });
+                                            }
                                         }
+                                        
                                       } else {
                                         showDialog(
                                             context: context,
@@ -750,7 +757,7 @@ class _signUpState extends State<signUp> {
                                                 ],
                                               );
                                             });
-                                      }
+                                       }
                                     },
                                     child: Center(
                                       child: Text("SIGNUP",
@@ -831,4 +838,5 @@ class _signUpState extends State<signUp> {
             ),
     );
   }
+  
 }

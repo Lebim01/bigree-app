@@ -115,6 +115,11 @@ class _favoriteState extends State<favorite> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        backgroundColor: Colors.deepPurple,
+        onPressed: ()=> Navigator.pushNamed(context, 'createEvent'),
+      ),
     );
   }
 }
@@ -590,4 +595,6 @@ class noItem extends StatelessWidget {
       ),
     );
   }
+
+  
 }

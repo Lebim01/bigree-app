@@ -49,4 +49,7 @@ class Es implements Lang.Language {
   @override
   String join = 'Unirse';
 
+  @override
+  String createdEvent = 'Crear Evento';
+
 }
