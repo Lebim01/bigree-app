@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:event_country/models/evnets_models.dart';
+import 'package:event_country/services/event_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,8 +23,13 @@ class _createEventState extends State<createEvent> {
   String _fecha = ''; 
   double valor = 0.0;
   File foto;
+  bool _guardando = false;
   final formKey = GlobalKey<FormState>();
   TextEditingController _inputfieldDateController = new TextEditingController();
+
+  ///Model Events
+  EventModel eventModel = new EventModel(); 
+  final productoService = EventsServices();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +74,9 @@ class _createEventState extends State<createEvent> {
                  SizedBox(height: 10.0),
                  _crearFecha(context),
                  SizedBox(height: 10.0),
-                 _createPrice()
+                 _createPrice(),
+                  SizedBox(height: 10.0),
+                 _crearBotton()
               ],
             ),
           ),
@@ -78,6 +87,7 @@ class _createEventState extends State<createEvent> {
 
   Widget _createTitle(){
     return  TextFormField(
+      initialValue: eventModel.title,
       keyboardType: TextInputType.text,
       textCapitalization:
       TextCapitalization.words,
@@ -97,10 +107,18 @@ class _createEventState extends State<createEvent> {
             fontFamily: "Sofia",
             fontSize: 15.0),
       ),
+      /////get data
+      onSaved: (value) => eventModel.title = value,
+      validator: (value){
+        if(value.length < 3){
+          return 'Ingrese el titulo ';
+        }else return null;
+      },
     );
   }
   Widget _createDescripton(){
     return  TextFormField(
+      initialValue: eventModel.description,
       keyboardType: TextInputType.text,
       textCapitalization:
       TextCapitalization.words,
@@ -120,10 +138,17 @@ class _createEventState extends State<createEvent> {
             fontFamily: "Sofia",
             fontSize: 15.0),
       ),
+      onSaved: (value)=> eventModel.description = value,
+      validator: (value){
+        if(value.length < 10){
+          return 'Ingrese una descripcion';
+        }else return null;
+      }
     );
   }
   Widget _createLocation(){
     return  TextFormField(
+      initialValue: eventModel.location,
       keyboardType: TextInputType.text,
       textCapitalization:
       TextCapitalization.words,
@@ -143,11 +168,18 @@ class _createEventState extends State<createEvent> {
             fontFamily: "Sofia",
             fontSize: 15.0),
       ),
+      onSaved: (value) => eventModel.location = value,
+      validator: (value){
+        if(value.length < 10){
+          return 'Ingrese una direccion';
+        }else return null;
+      },
     );
   }
 
   Widget _crearFecha(BuildContext context) {
     return TextFormField(
+      //initialValue: eventModel.date.toString(),
       enableInteractiveSelection: false,
       controller: _inputfieldDateController,
       style: TextStyle(
@@ -166,6 +198,12 @@ class _createEventState extends State<createEvent> {
             fontFamily: "Sofia",
             fontSize: 15.0),
       ),
+      onSaved: (value)=> eventModel.date = value.toString(),
+      validator: (value){
+        if(value.length < 10){
+          return 'Ingresar fecha';
+        }else return null;
+      },
       onTap: (){
         FocusScope.of(context).requestFocus(new FocusNode());
         _selectDate(context);
@@ -183,8 +221,12 @@ class _createEventState extends State<createEvent> {
     ); 
     if(picked != null){
       setState(() {
+       
         _fecha = picked.toString();
+        _fecha = _fecha.substring(0, 10);
         _inputfieldDateController.text = _fecha;
+         print(_fecha);
+
       });
     }
   }
@@ -229,7 +271,7 @@ class _createEventState extends State<createEvent> {
 
   Widget _createPrice() {
      return TextFormField(
-       initialValue: valor.toString(),
+       initialValue: eventModel.price.toString(),
        keyboardType: TextInputType.numberWithOptions(decimal: true),
        style: TextStyle(
           fontFamily: "WorkSofiaSemiBold",
@@ -247,7 +289,7 @@ class _createEventState extends State<createEvent> {
             fontFamily: "Sofia",
             fontSize: 15.0),
       ),
-      onSaved: (value) => valor = double.parse(value),
+      onSaved: (value) => eventModel.price = double.parse(value),
       validator: (value){
         if(utils.isNumeric(value)){
           return null;
@@ -257,5 +299,78 @@ class _createEventState extends State<createEvent> {
   }
 
 
+  Widget _crearBotton() {
+    return RaisedButton.icon(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0)
+      ),
+      color: Colors.deepPurple,
+      textColor: Colors.white,
+      label: Text('guardar'),
+      icon: Icon(Icons.save),
+      onPressed: (_guardando) ? null : _submit,
+    );
+  }
+
+  void _submit()async { 
+
+    if(!formKey.currentState.validate()) return;
+    formKey.currentState.save();
+    
+    // setState(() {
+    //   _guardando = true;
+    // });
+    // print(eventModel.title);
+    // print(eventModel.description);
+    // print(eventModel.location);
+    // print(eventModel.price);
+     print( eventModel.date );
+    if(eventModel.id == null){
+       productoService.createEevnet(eventModel).then((resp)=>{
+         if(resp){
+           _mostrarAlert(context, 'Success!', 'Evento creado', 'comprobado')
+         }else _mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz')
+       });
+    }else{
+      //productoProvider.actualizarProducto(producto);
+    }
+
+  }
+  void _mostrarAlert(BuildContext context,String titulo, String text, String img){
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context){
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          title: Text('$titulo'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('$text'),
+               SizedBox(height: 10.0),
+              image(img)
+            ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Ok'),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  Navigator.pop(context);
+                },
+                )
+            ],
+        );
+      }
+    );
+  }
+
+  Widget image(String img){
+    return Image(
+      image: AssetImage('assets/image/$img.png'),
+      width: 100,
+      );
+  }
        
 }
