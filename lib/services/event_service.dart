@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 final String _url = 'http://datatecblocks.xyz:4004/graphql';
 
-final _getevent = '{events{id,title,description,price,date,image,location}}'; 
+final _getevent = '{events {id,title,description,price,date,image,location}}'; 
 final String img = 'https://static2.bigstockphoto.com/0/9/1/large1500/190827454.jpg';
 
 class EventsServices{

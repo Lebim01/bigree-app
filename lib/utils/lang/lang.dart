@@ -24,6 +24,18 @@ class Language {
   // Manage event
   String manageEvent;
   String location;
+  //SignUp
+  String signUp;
+  String photoProfile;
+  String name;
+  String country;
+  String city;
+  String email;
+  String emailAddress;
+  String password;
+  String repeatPassword; 
+  String rememberMe;
+  String signIn;
 }
 
 class Lang implements Language {
@@ -51,6 +63,17 @@ class Lang implements Language {
     this.join = lang.join;
     this.createdEvent = lang.createdEvent;
     this.loading = lang.loading;
+    this.signUp = lang.signUp;
+    this.photoProfile = lang.photoProfile;
+    this.name = lang.name;
+    this.country = lang.country;
+    this.city = lang.city;
+    this.email = lang.email;
+    this.emailAddress = lang.emailAddress;
+    this.password = lang.password;
+    this.repeatPassword = lang.repeatPassword;
+    this.rememberMe = lang.rememberMe;
+    this.signIn = lang.signIn;
   }
 
   @override
@@ -107,4 +130,36 @@ class Lang implements Language {
   @override
   String loading; 
 
+  @override
+  String signUp;
+
+  @override
+  String photoProfile;
+
+  @override
+  String name;
+
+  @override
+  String country;
+
+  @override
+  String city;
+
+  @override
+  String email;
+
+  @override
+  String password;
+
+  @override
+  String repeatPassword;
+
+  @override
+  String emailAddress;
+
+  @override
+  String rememberMe;
+
+  @override
+  String signIn;
 }

@@ -330,8 +330,7 @@ class _createEventState extends State<createEvent> {
          if(resp){
            _mostrarAlert(context, 'Success!', 'Evento creado', 'comprobado');
          }
-         else{
-          _mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz');
+          else { _mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz');
          }
        });
     }else{
