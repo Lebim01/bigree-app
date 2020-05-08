@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:moment/moment.dart';
+import 'package:event_country/utils/widgets/eventDetail.dart' as eventDetail;
 
 String queryAllEventList = """
   {
@@ -219,37 +219,25 @@ class cardDataFirestore extends StatelessWidget {
         primary: false,
         itemCount: list.length,
         itemBuilder: (context, i) {
+
+          int id = list[i]['id'].toInt();
           String title = list[i]['title'];
           String category = list[i]['category'];
           String imageUrl = list[i]['image'];
-          String id = list[i]['id'].toString();
           String description = list[i]['descripcion'];
-          int price = list[i]['price'];
+          double price = list[i]['price'].toDouble();
           String hours = list[i]['time'];
-          //String date = Moment(list[i]['date']).format('YYYY-MM-DD');
+          String date = list[i]['date'];
           String location = list[i]['location'];
           String description2 = '';
           String description3 = '';
           List usersJoinEvent = list[i]['UserEvents'];
 
           return InkWell(
-            /*onTap: () {
-              Navigator.of(context).push(PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => new newsHeaderListDetail(
-                        category: category,
-                        desc: description,
-                        price: price,
-                        imageUrl: imageUrl,
-                        index: list[i].reference,
-                        time: hours,
-                        date: date,
-                        place: location,
-                        title: title,
-                        id: id,
-                        userId: dataUser,
-                        desc2: description2,
-                        desc3: description3,
-                      ),
+            onTap: () {
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => new eventDetail.EventDetailScreen(id),
                   transitionDuration: Duration(milliseconds: 600),
                   transitionsBuilder:
                       (_, Animation<double> animation, __, Widget child) {
@@ -257,8 +245,10 @@ class cardDataFirestore extends StatelessWidget {
                       opacity: animation.value,
                       child: child,
                     );
-                  }));
-            },*/
+                  }
+                )
+              );
+            },
             child: Padding(
               padding: const EdgeInsets.only(top: 20.0),
               child: Stack(

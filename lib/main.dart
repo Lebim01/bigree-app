@@ -5,13 +5,14 @@ import 'package:event_country/Screen/B3_Manage_Event/Create_Event.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Screen/Bottom_Nav_Bar/bottomNavBar.dart';
 import 'Screen/Login/OnBoarding.dart';
 import 'dart:io' show Platform;
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:event_country/graphql.dart' as graphql;
 
 /// Run first apps open
 void main() {
@@ -23,22 +24,10 @@ class myApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final HttpLink httpLink = HttpLink(
-      uri: 'http://datatecblocks.xyz:4004/graphql',
-    );
-
-    final AuthLink authLink = AuthLink(
-      getToken: () async => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
-      // OR
-      // getToken: () => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
-    );
-
-    final Link link = authLink.concat(httpLink);
-
     ValueNotifier<GraphQLClient> client = ValueNotifier(
       GraphQLClient(
         cache: InMemoryCache(),
-        link: link,
+        link: graphql.link,
       ),
     );
 
@@ -53,6 +42,7 @@ class myApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent, //or set color with: Color(0xFF0000FF)
     ));
+    
     return new GraphQLProvider(
       client: client,
       child: MaterialApp(
