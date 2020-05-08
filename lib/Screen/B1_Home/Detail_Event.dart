@@ -425,7 +425,7 @@ class _newsListDetailState extends State<newsHeaderListDetail> {
                     Padding(
                       padding: const EdgeInsets.only(left: 20.0),
                       child: Text(
-                        widget.price,
+                        "${widget.price}",
                         style: TextStyle(
                             color: Colors.black54,
                             fontSize: 19.0,

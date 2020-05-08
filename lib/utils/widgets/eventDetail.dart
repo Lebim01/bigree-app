@@ -323,7 +323,7 @@ Widget detailScreen(context, event){
                       Padding(
                         padding: const EdgeInsets.only(left: 15.0),
                         child: Text(
-                          event.price.toString(),
+                          "\$${event.price}",
                           style: TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.w500,
@@ -392,7 +392,7 @@ Widget detailScreen(context, event){
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Text(
-                  event.price.toString(),
+                  "\$${event.price.toString()}",
                   style: TextStyle(
                     color: Colors.black54,
                     fontSize: 19.0,
