@@ -151,11 +151,7 @@ class _profileState extends State<profile> {
                                   decoration: BoxDecoration(
                                       color: Colors.red,
                                       image: DecorationImage(
-                                          image: NetworkImage(userDocument[
-                                                      "photoProfile"] !=
-                                                  null
-                                              ? userDocument["photoProfile"]
-                                              : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"),
+                                          image: NetworkImage("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"),
                                           fit: BoxFit.cover),
                                       borderRadius: BorderRadius.all(Radius.circular(75.0)),
                                       boxShadow: [
@@ -173,9 +169,7 @@ class _profileState extends State<profile> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                userDocument["name"] != null
-                                    ? userDocument["name"]
-                                    : "Nama",
+                                "Nombre del usuario",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: "Sofia",
@@ -187,9 +181,7 @@ class _profileState extends State<profile> {
                                 padding: const EdgeInsets.only(top: 5.0),
                                 child: Text(
                                   //jurusan!= null? jurusan :
-                                  userDocument["email"] != null
-                                      ? userDocument["email"]
-                                      : "Email",
+                                  "Correo del usuario",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontFamily: "Sofia",
@@ -235,115 +227,116 @@ class _profileState extends State<profile> {
     );
 
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Container(
-            color: Colors.white,
-            child: Stack(
-              children: <Widget>[
-                /// Setting Header Banner
-                Container(
-                  height: 260.0,
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Container(
+          color: Colors.white,
+          child: Stack(
+            children: <Widget>[
+              /// Setting Header Banner
+              Container(
+                height: 260.0,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image:
+                            AssetImage("assets/image/backgroundBanner.png"),
+                        fit: BoxFit.cover)),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 220.0),
+                child: Container(
                   decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image:
-                              AssetImage("assets/image/backgroundBanner.png"),
-                          fit: BoxFit.cover)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 220.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30.0),
-                            topRight: Radius.circular(30.0))),
-                    child: Column(
-                      /// Setting Category List
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 50.0, left: 85.0, right: 30.0, bottom: 10.0),
-                          child: Divider(
-                            color: Colors.black12,
-                            height: 2.0,
-                          ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30.0),
+                          topRight: Radius.circular(30.0))),
+                  child: Column(
+                    /// Setting Category List
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 50.0, left: 85.0, right: 30.0, bottom: 10.0),
+                        child: Divider(
+                          color: Colors.black12,
+                          height: 2.0,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 65.0, left: 85.0, right: 30.0, bottom: 10.0),
-                          child: Divider(
-                            color: Colors.black12,
-                            height: 2.0,
-                          ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 65.0, left: 85.0, right: 30.0, bottom: 10.0),
+                        child: Divider(
+                          color: Colors.black12,
+                          height: 2.0,
                         ),
-                        category(
-                          txt: "Call Center",
-                          padding: 30.0,
-                          image: "assets/icon/callcenter.png",
-                          tap: () {
-                            Navigator.of(context).push(PageRouteBuilder(
-                                pageBuilder: (_, __, ___) => new callCenter()));
-                          },
+                      ),
+                      category(
+                        txt: "Call Center",
+                        padding: 30.0,
+                        image: "assets/icon/callcenter.png",
+                        tap: () {
+                          Navigator.of(context).push(PageRouteBuilder(
+                              pageBuilder: (_, __, ___) => new callCenter()));
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 25.0, left: 85.0, right: 30.0, bottom: 10.0),
+                        child: Divider(
+                          color: Colors.black12,
+                          height: 2.0,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 25.0, left: 85.0, right: 30.0, bottom: 10.0),
-                          child: Divider(
-                            color: Colors.black12,
-                            height: 2.0,
-                          ),
+                      ),
+                      category(
+                        padding: 38.0,
+                        txt: "About Apps",
+                        image: "assets/icon/aboutapp.png",
+                        tap: () {
+                          Navigator.of(context).push(PageRouteBuilder(
+                              pageBuilder: (_, __, ___) => new aboutApps()));
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 25.0, left: 85.0, right: 30.0, bottom: 10.0),
+                        child: Divider(
+                          color: Colors.black12,
+                          height: 2.0,
                         ),
-                        category(
-                          padding: 38.0,
-                          txt: "About Apps",
-                          image: "assets/icon/aboutapp.png",
-                          tap: () {
-                            Navigator.of(context).push(PageRouteBuilder(
-                                pageBuilder: (_, __, ___) => new aboutApps()));
-                          },
+                      ),
+                      category(
+                        txt: lang.logout,
+                        padding: 30.0,
+                        image: "assets/icon/logout.png",
+                        tap: () {
+                          _delete();
+                          FirebaseAuth.instance.signOut().then((result) =>
+                              Navigator.of(context).pushReplacement(
+                                  PageRouteBuilder(
+                                      pageBuilder: (_, ___, ____) =>
+                                          new ChoseLogin())));
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 25.0, left: 85.0, right: 30.0),
+                        child: Divider(
+                          color: Colors.black12,
+                          height: 2.0,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 25.0, left: 85.0, right: 30.0, bottom: 10.0),
-                          child: Divider(
-                            color: Colors.black12,
-                            height: 2.0,
-                          ),
-                        ),
-                        category(
-                          txt: lang.logout,
-                          padding: 30.0,
-                          image: "assets/icon/logout.png",
-                          tap: () {
-                            _delete();
-                            FirebaseAuth.instance.signOut().then((result) =>
-                                Navigator.of(context).pushReplacement(
-                                    PageRouteBuilder(
-                                        pageBuilder: (_, ___, ____) =>
-                                            new ChoseLogin())));
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 25.0, left: 85.0, right: 30.0),
-                          child: Divider(
-                            color: Colors.black12,
-                            height: 2.0,
-                          ),
-                        ),
-                        Padding(padding: EdgeInsets.only(bottom: 20.0)),
-                      ],
-                    ),
+                      ),
+                      Padding(padding: EdgeInsets.only(bottom: 20.0)),
+                    ],
                   ),
                 ),
+              ),
 
-                /// Calling _profile variable
-                _profile,
-              ],
-            ),
+              /// Calling _profile variable
+              _profile,
+            ],
           ),
-        ));
+        ),
+      )
+    );
   }
 }
 

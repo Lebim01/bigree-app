@@ -3,8 +3,6 @@ import 'package:event_country/Screen/B2_Category/B2_Category.dart';
 import 'package:event_country/Screen/B3_Manage_Event/B3_Manage_Event.dart';
 import 'package:event_country/Screen/B4_Profile/B4_Profile.dart';
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:event_country/graphql.dart' as myGraphql;
 import 'custom_nav_bar.dart';
 
 class bottomNavBar extends StatefulWidget {
@@ -51,16 +49,9 @@ class _bottomNavBarState extends State<bottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    ValueNotifier<GraphQLClient> client = ValueNotifier(
-      GraphQLClient(
-        cache: InMemoryCache(),
-        link: myGraphql.httpLink,
-      ),
-    );
+    
 
-    return GraphQLProvider(
-      client: client,
-      child: Scaffold(
+    return Scaffold(
         body: callPage(currentIndex),
         bottomNavigationBar: BottomNavigationDotBar(
             // Usar -> "BottomNavigationDotBar"
@@ -95,7 +86,6 @@ class _bottomNavBarState extends State<bottomNavBar> {
                     });
                   }),
             ]),
-      )
-    );
+      );
   }
 }

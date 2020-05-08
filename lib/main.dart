@@ -5,18 +5,38 @@ import 'package:event_country/Screen/B3_Manage_Event/Create_Event.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Screen/Bottom_Nav_Bar/bottomNavBar.dart';
 import 'Screen/Login/OnBoarding.dart';
 import 'dart:io' show Platform;
+import 'package:event_country/graphql.dart' as myGraphql;
+
+class TokenNotification extends Notification {}
 
 /// Run first apps open
-void main() {
+void main() async {
   runApp(myApp());
 }
 
-/// Set orienttation
-class myApp extends StatelessWidget {
+class myApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return myAppState();
+  }
+}
+
+class myAppState extends State<myApp> {
+
+  String token;
+
+  _setToken(_token){
+    print("El token cambio $_token");
+    setState(() {
+      token = _token;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     /// To set orientation always portrait
@@ -29,24 +49,34 @@ class myApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.transparent, //or set color with: Color(0xFF0000FF)
     ));
-    
-    return new MaterialApp(
-      title: "Event Country",
-      theme: ThemeData(
-          brightness: Brightness.light,
-          backgroundColor: Colors.white,
-          primaryColorLight: Colors.white,
-          primaryColorBrightness: Brightness.light,
-          primaryColor: Colors.white),
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
 
-      /// Move splash screen to ChoseLogin Layout
-      /// Routes
-      routes: <String, WidgetBuilder>{
-        "login": (BuildContext context) => new SplashScreen(),
-        "createEvent": (BuildContext context) => new createEvent() 
-      },
+    ValueNotifier<GraphQLClient> client = ValueNotifier(
+      GraphQLClient(
+        cache: InMemoryCache(),
+        link: myGraphql.httpLink,
+      ),
+    );
+    
+    return GraphQLProvider(
+      client: client,
+      child: MaterialApp(
+        title: "Event Country",
+        theme: ThemeData(
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
+            primaryColorLight: Colors.white,
+            primaryColorBrightness: Brightness.light,
+            primaryColor: Colors.white),
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen(),
+
+        /// Move splash screen to ChoseLogin Layout
+        /// Routes
+        routes: <String, WidgetBuilder>{
+          "login": (BuildContext context) => new SplashScreen(),
+          "createEvent": (BuildContext context) => new createEvent() 
+        },
+      )
     );
   }
 }

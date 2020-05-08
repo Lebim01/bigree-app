@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:event_country/Screen/B1_Home/Home_Search/search_page.dart' as SearchPage;
 import 'package:event_country/utils/lang/lang.dart' as Lang;
 
-final lang = Lang.Lang();
+final _lang = Lang.Lang();
 
 AppBar appBarWithButtonBackAndSearch(BuildContext context) {
   return AppBar(
@@ -13,12 +13,13 @@ AppBar appBarWithButtonBackAndSearch(BuildContext context) {
     title: Padding(
       padding: const EdgeInsets.only(left: 10.0, right: 10.0),
       child: Text(
-        lang.allEvents,
+        _lang.allEvents,
         style: TextStyle(
-            fontFamily: "Gotik",
-            fontSize: 20.0,
-            color: Colors.black,
-            fontWeight: FontWeight.w700),
+          fontFamily: "Gotik",
+          fontSize: 20.0,
+          color: Colors.black,
+          fontWeight: FontWeight.w700
+        ),
       ),
     ),
     actions: <Widget>[

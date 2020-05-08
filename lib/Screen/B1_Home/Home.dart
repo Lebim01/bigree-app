@@ -209,9 +209,7 @@ class _HomeState extends State<Home> {
                         onTap: () {
                           Navigator.of(context).push(PageRouteBuilder(
                               pageBuilder: (_, __, ___) =>
-                                new EventWidget.AllEventList(
-                                  appBar: AppBarWidget.appBarWithButtonBackAndSearch(context)
-                              )
+                                new EventWidget.AllEventListScreen(appBar: AppBarWidget.appBarWithButtonBackAndSearch(context))
                             )
                           );
                         },

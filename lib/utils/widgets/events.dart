@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:graphql_flutter/graphql_flutter.dart' as Graphql;
 import 'package:shimmer/shimmer.dart';
 import 'package:event_country/utils/widgets/eventDetail.dart' as eventDetail;
 import 'package:event_country/utils/models.dart' as models;
@@ -328,20 +328,20 @@ class cardDataFirestore extends StatelessWidget {
   }
 }
 
-class AllEventList extends StatefulWidget {
+class AllEventListScreen extends StatefulWidget {
   AppBar appBar;
 
-  AllEventList({Key key, this.appBar}) : super(key: key);
+  AllEventListScreen({Key key, this.appBar}) : super(key: key);
 
   @override
-  _allEventsListState createState() => _allEventsListState(this.appBar);
+  _allEventsListStateScreen createState() => _allEventsListStateScreen(this.appBar);
 }
 
-class _allEventsListState extends State<AllEventList> {
+class _allEventsListStateScreen extends State<AllEventListScreen> {
 
   AppBar appBar;
 
-  _allEventsListState(this.appBar);
+  _allEventsListStateScreen(this.appBar);
 
   @override
   bool loadImage = true;
@@ -371,33 +371,62 @@ class _allEventsListState extends State<AllEventList> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(bottom: 0.0),
-                child: Query(
-                  options: QueryOptions(
-                    documentNode: gql(queryAllEventList),
-                  ),
-                  builder: (QueryResult result, { VoidCallback refetch, FetchMore fetchMore }) {
-                    if (result.loading) {
-                      return _loadingDataHeader(context);
-                    } else if(result.hasException) {
-                      return Text(result.exception.toString());
-                    } else {
-                      List events = result.data['events'];
-
-                      if (events.length == 0) {
-                        return _loadingDataHeader(context);
-                      } else {
-                        return new cardDataFirestore(
-                          list: events,
-                        );
-                      }
-                    }
-                  },
-                )
+                child: AllEventList()
               )
             ]
           )
         )
       )
+    );
+  }
+}
+
+class AllEventList extends StatefulWidget {
+  @override
+  _allEventsListState createState() => _allEventsListState();
+}
+
+class _allEventsListState extends State<AllEventList> {
+
+  _allEventsListState();
+
+  @override
+  bool loadImage = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer(Duration(seconds: 3), () {
+      setState(() {
+        loadImage = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Graphql.Query(
+      options: Graphql.QueryOptions(
+        documentNode: Graphql.gql(queryAllEventList),
+      ),
+      builder: (Graphql.QueryResult result, { VoidCallback refetch, Graphql.FetchMore fetchMore }) {
+        if (result.loading) {
+          return _loadingDataHeader(context);
+        } else if(result.hasException) {
+          return Text(result.exception.toString());
+        } else {
+          List events = result.data['events'];
+
+          if (events.length == 0) {
+            return _loadingDataHeader(context);
+          } else {
+            return new cardDataFirestore(
+              list: events,
+            );
+          }
+        }
+      },
     );
   }
 }

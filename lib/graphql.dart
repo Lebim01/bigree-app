@@ -1,4 +1,5 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 HttpLink httpLink = HttpLink(
   uri: 'http://datatecblocks.xyz:4004/graphql',
@@ -7,12 +8,22 @@ HttpLink httpLink = HttpLink(
   }
 );
 
+AuthLink authLink = AuthLink(
+  getToken: () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString("token");
+    return 'Bearer $token';
+  }
+);
+
+Link link = authLink.concat(httpLink);
+
 GraphQLClient _client;
 
 // Create a common client for further requests
 GraphQLClient getGraphQLClient() {
   _client ??= GraphQLClient(
-    link: httpLink,
+    link: link,
     cache: InMemoryCache(),
   );
 

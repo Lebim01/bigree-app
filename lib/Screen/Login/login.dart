@@ -391,22 +391,13 @@ class _loginState extends State<login> {
                                           });
                                           String token = await login(_email.toString().trim(), _pass.toString().trim());
                                           prefs.setString("token", token);
-                                          myGraphql.httpLink = new Graphql.HttpLink(
-                                            uri: 'http://datatecblocks.xyz:4004/graphql',
-                                            headers:{
-                                              'Authorization': 'Bearer $token'
-                                            }
-                                          );
+                                          
 
                                           Navigator.of(context).pushReplacement(
                                             PageRouteBuilder(pageBuilder: (_, __, ___) => new bottomNavBar())
                                           );
                                         }catch(err){
                                           showDialogError(context, err);
-                                        }finally{
-                                          setState(() {
-                                            isLoading = false;
-                                          });
                                         }
                                       } else {
                                         showDialogError(context, "Please check your email and password");
