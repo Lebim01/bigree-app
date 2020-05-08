@@ -8,13 +8,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:graphql_flutter/graphql_flutter.dart' as Graphql;
 
-String queryLogin = """
-  login(username: \$username, password: \$password) {
-    token
-  }
-""";
+import 'package:graphql_flutter/graphql_flutter.dart' as Graphql;
+import 'package:event_country/graphql.dart' as myGraphql;
 
 class login extends StatefulWidget {
   @override
@@ -48,6 +44,45 @@ class _loginState extends State<login> {
     setState(() {
       _isSelected = !_isSelected;
     });
+  }
+
+  void showDialogError(context, text){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(text),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
+
+  Future<String> login(email, password) async {
+    Graphql.QueryOptions queryOptions = Graphql.QueryOptions(
+      documentNode: Graphql.gql("""
+        {
+          login(username: "$email", password: "$password") {
+            token
+          }
+        }
+      """)
+    );
+
+    Graphql.QueryResult queryResult = await myGraphql.getGraphQLClient().query(queryOptions);
+    if(queryResult.hasException){
+      throw queryResult.exception.graphqlErrors[0].message;
+    }
+    
+    return queryResult.data['token'].toString();
   }
 
   Widget radioButton(bool isSelected) => Container(
@@ -350,95 +385,24 @@ class _loginState extends State<login> {
                                       SharedPreferences prefs;
                                       prefs = await SharedPreferences.getInstance();
                                       final formState = _registerFormKey.currentState;
-                                      FirebaseUser user;
                                       if (formState.validate()) {
-                                        formState.save();
                                         try {
-                                          prefs.setString("username", _email);
-                                          prefs.setString("id", _id);
-                                          user = await FirebaseAuth.instance
-                                              .signInWithEmailAndPassword(
-                                                email: _email.toString().trim(),
-                                                password: _pass.toString().trim(),
-                                              );
-
+                                          formState.save();
                                           setState(() {
                                             isLoading = true;
                                           });
-                                          // user.sendEmailVerification();
+                                          String token = await login(_email.toString().trim(), _pass.toString().trim());
+                                          prefs.setString("token", token);
 
-                                        } catch (e) {
-                                          print('Error: $e');
-                                          CircularProgressIndicator();
-                                          print(e.message);
-                                          print(_email);
-                                          print(_pass);
-
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: Text("Login Failed"),
-                                                content: Text(e.message),
-                                                actions: <Widget>[
-                                                  FlatButton(
-                                                    child: Text("Close"),
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  )
-                                                ],
-                                              );
-                                            }
+                                          Navigator.of(context).pushReplacement(
+                                            PageRouteBuilder(pageBuilder: (_, __, ___) => new bottomNavBar())
                                           );
-                                        } finally {
-                                          if (user != null) {
-                                            user = await FirebaseAuth.instance
-                                                .signInWithEmailAndPassword(
-                                                  email: _email,
-                                                  password: _pass,
-                                                )
-                                                .then((currentUser) => Firestore
-                                                    .instance
-                                                    .collection("users")
-                                                    .document(currentUser.uid)
-                                                    .get()
-                                                    .then((DocumentSnapshot
-                                                            result) =>
-                                                        Navigator.of(context)
-                                                            .pushReplacement(
-                                                                PageRouteBuilder(
-                                                                    pageBuilder: (_,
-                                                                            __,
-                                                                            ___) =>
-                                                                        new bottomNavBar(
-                                                                          idUser:
-                                                                              currentUser.uid,
-                                                                        ))))
-                                                    .catchError(
-                                                        (err) => print(err)))
-                                                .catchError(
-                                                    (err) => print(err));
-                                          }
+                                        }catch(err){
+                                          print(err);
+                                          showDialogError(context, err);
                                         }
                                       } else {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: Text("Error"),
-                                                content: Text("Please check your email and password"),
-                                                actions: <Widget>[
-                                                  FlatButton(
-                                                    child: Text("Close"),
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  )
-                                                ],
-                                              );
-                                            });
+                                        showDialogError(context, "Please check your email and password");
                                       }
                                     },
                                     child: Center(
