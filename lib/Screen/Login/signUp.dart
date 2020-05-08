@@ -13,8 +13,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
-
+import '../../utils/lang/lang.dart' as Lang;
+import 'package:event_country/models/register_models.dart';
+import 'package:event_country/services/register_service.dart';
 import 'package:event_country/utils/widgets/alert.dart' as alert;
+
+
+final lang = Lang.Lang();
 
 class signUp extends StatefulWidget {
   @override
@@ -27,7 +32,8 @@ class _signUpState extends State<signUp> {
   String filename;
   File tempImage;
   bool isLoading = false;
-  final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
+  bool _guardando = false;
+  final formKey = GlobalKey<FormState>();
   String _email, _pass, _pass2, _name, _country, _city;
   var profilePicUrl;
   TextEditingController signupEmailController = new TextEditingController();
@@ -36,6 +42,9 @@ class _signUpState extends State<signUp> {
   TextEditingController signupNameController = new TextEditingController();
   TextEditingController signupPasswordController = new TextEditingController();
   TextEditingController signupConfirmPasswordController = new TextEditingController();
+
+  RegisterModel registerModel = new RegisterModel(); 
+  final productoService = RegisterServices();
 
   ///
   /// Response file from image picker
@@ -136,6 +145,84 @@ class _signUpState extends State<signUp> {
         ),
       );
 
+  
+   void _submit()async { 
+     print("holA");
+
+    if(!formKey.currentState.validate()) return;
+    formKey.currentState.save();
+    
+    // setState(() {
+    //   _guardando = true;
+    // });
+
+    if(registerModel.username != null){
+       productoService.createRegister(registerModel).then((resp){
+         if(resp){
+           print("Registro guardado");
+            //_mostrarAlert(contex, 'Success!', 'Evento creado', 'comprobado');
+         }
+          else { 
+            //_mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz');
+            print("Error al guardar registro");
+         }
+       });
+    } else {
+      
+    }
+
+  }
+
+  void _mostrarAlert(BuildContext context,String titulo, String text, String img){
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context){
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          title: Text('$titulo'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('$text'),
+               SizedBox(height: 10.0),
+            ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Ok'),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  Navigator.pop(context);
+                },
+                )
+            ],
+        );
+      }
+    );
+  } 
+
+
+  void showDialogError(context, text){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(text),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
@@ -188,7 +275,8 @@ class _signUpState extends State<signUp> {
                         Row(
                           children: <Widget>[
                             SizedBox(height: 20.0),
-                            Text("Event",
+                            Text(
+                                lang.signUp,
                                 style: TextStyle(
                                     fontFamily: "Sofia",
                                     fontSize:
@@ -220,27 +308,28 @@ class _signUpState extends State<signUp> {
                             padding: EdgeInsets.only(
                                 left: 0.0, right: 0.0, top: 0.0),
                             child: Form(
-                              key: _registerFormKey,
+                              key: formKey,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Container(
-                                    width: 120.0,
-                                    height: 45.0,
+                                    width: 200.0,
+                                    height: 60.0,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.only(
                                           bottomRight: Radius.circular(80.0)),
                                       color: Color(0xFFD898F8),
                                     ),
                                     child: Center(
-                                      child: Text("Signup",
+                                      child: Text(
+                                          lang.signUp,
                                           style: TextStyle(
                                               fontSize: ScreenUtil.getInstance()
-                                                  .setSp(32),
+                                                  .setSp(25),
                                               fontFamily: "Sofia",
                                               fontWeight: FontWeight.w600,
                                               color: Colors.white,
-                                              letterSpacing: .63)),
+                                              letterSpacing: .80)),
                                     ),
                                   ),
                                   SizedBox(
@@ -335,7 +424,7 @@ class _signUpState extends State<signUp> {
                                                 height: 10.0,
                                               ),
                                               Text(
-                                                "Photo Profile",
+                                                lang.photoProfile,
                                                 style: TextStyle(
                                                     fontFamily: "Sofia",
                                                     fontWeight:
@@ -347,7 +436,8 @@ class _signUpState extends State<signUp> {
                                         SizedBox(
                                           height: 10.0,
                                         ),
-                                        Text("Name",
+                                        Text(
+                                            lang.name,
                                             style: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize:
@@ -356,13 +446,13 @@ class _signUpState extends State<signUp> {
                                                 letterSpacing: .9,
                                                 fontWeight: FontWeight.w600)),
                                         TextFormField(
+                                          initialValue: registerModel.name,
                                           validator: (input) {
                                             if (input.isEmpty) {
                                               return 'Please input your name';
                                             }
                                           },
-                                          onSaved: (input) => _name = input,
-                                          controller: signupNameController,
+                                          onSaved: (value) => registerModel.name = value,
                                           keyboardType: TextInputType.text,
                                           textCapitalization:
                                               TextCapitalization.words,
@@ -377,7 +467,7 @@ class _signUpState extends State<signUp> {
                                               size: 19.0,
                                               color: Colors.black45,
                                             ),
-                                            hintText: "Name",
+                                            hintText: lang.name,
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize: 15.0),
@@ -386,7 +476,8 @@ class _signUpState extends State<signUp> {
                                         SizedBox(
                                           height: 10.0,
                                         ),
-                                        Text("Country",
+                                        Text(
+                                            lang.country,
                                             style: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize:
@@ -416,7 +507,7 @@ class _signUpState extends State<signUp> {
                                               size: 19.0,
                                               color: Colors.black45,
                                             ),
-                                            hintText: "Country",
+                                            hintText: lang.country,
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize: 15.0),
@@ -425,7 +516,8 @@ class _signUpState extends State<signUp> {
                                         SizedBox(
                                           height: 10.0,
                                         ),
-                                        Text("City",
+                                        Text(
+                                            lang.city,
                                             style: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize:
@@ -455,7 +547,7 @@ class _signUpState extends State<signUp> {
                                               size: 22.0,
                                               color: Colors.black45,
                                             ),
-                                            hintText: "City",
+                                            hintText: lang.city,
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize: 15.0),
@@ -464,7 +556,8 @@ class _signUpState extends State<signUp> {
                                         SizedBox(
                                           height: 10.0,
                                         ),
-                                        Text("Email",
+                                        Text(
+                                            lang.email,
                                             style: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize:
@@ -473,13 +566,13 @@ class _signUpState extends State<signUp> {
                                                 letterSpacing: .9,
                                                 fontWeight: FontWeight.w600)),
                                         TextFormField(
+                                          initialValue: registerModel.username,
                                           validator: (input) {
                                             if (input.isEmpty) {
                                               return 'Please input your email';
                                             }
                                           },
-                                          onSaved: (input) => _email = input,
-                                          controller: signupEmailController,
+                                          onSaved: (value) => registerModel.username = value,
                                           keyboardType:
                                               TextInputType.emailAddress,
                                           style: TextStyle(
@@ -493,7 +586,7 @@ class _signUpState extends State<signUp> {
                                               color: Colors.black45,
                                               size: 18.0,
                                             ),
-                                            hintText: "Email Address",
+                                            hintText: lang.emailAddress,
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize: 16.0),
@@ -502,7 +595,8 @@ class _signUpState extends State<signUp> {
                                         SizedBox(
                                           height: 10.0,
                                         ),
-                                        Text("Password",
+                                        Text(
+                                            lang.password,
                                             style: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize:
@@ -511,7 +605,7 @@ class _signUpState extends State<signUp> {
                                                 letterSpacing: .9,
                                                 fontWeight: FontWeight.w600)),
                                         TextFormField(
-                                          controller: signupPasswordController,
+                                          initialValue: registerModel.password,
                                           obscureText: _obscureTextSignup,
                                           validator: (input) {
                                             if (input.isEmpty) {
@@ -520,7 +614,7 @@ class _signUpState extends State<signUp> {
                                                 return 'Input more 8 character';
                                             }
                                           },
-                                          onSaved: (input) => _pass = input,
+                                          onSaved: (value) => registerModel.password = value,
                                           style: TextStyle(
                                               fontFamily: "WorkSofiaSemiBold",
                                               fontSize: 16.0,
@@ -532,7 +626,7 @@ class _signUpState extends State<signUp> {
                                               color: Colors.black45,
                                               size: 18.0,
                                             ),
-                                            hintText: "Password",
+                                            hintText: lang.password,
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize: 16.0),
@@ -551,7 +645,8 @@ class _signUpState extends State<signUp> {
                                         SizedBox(
                                           height: 10.0,
                                         ),
-                                        Text("Repeat Password",
+                                        Text(
+                                            lang.repeatPassword,
                                             style: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize:
@@ -581,7 +676,7 @@ class _signUpState extends State<signUp> {
                                               color: Colors.black45,
                                               size: 18.0,
                                             ),
-                                            hintText: "Password",
+                                            hintText: lang.repeatPassword,
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize: 16.0),
@@ -626,7 +721,8 @@ class _signUpState extends State<signUp> {
                                 SizedBox(
                                   width: 8.0,
                                 ),
-                                Text("Remember me",
+                                Text(
+                                    lang.rememberMe,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 12,
@@ -654,118 +750,48 @@ class _signUpState extends State<signUp> {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     onTap: () async {
+                                      
                                       SharedPreferences prefs;
                                       prefs = await SharedPreferences.getInstance();
-                                      final formState = _registerFormKey.currentState;
+                                      final formState = formKey.currentState;
+                                      
                                       if (formState.validate()) {
-                                        formState.save();
-                                        if(_pass != _pass2){
-                                          alert.alert.mostrarAlert(context, 'Password do not match');
-                                        }else{
-                                          setState(() {
-                                          isLoading = true;
-                                        });
                                         try {
-                                          if (profilePicUrl == null) {
-                                            setState(() {
-                                              profilePicUrl =
-                                                  "https://firebasestorage.googleapis.com/v0/b/event-f3833.appspot.com/o/emptyProfilePicture.png?alt=media&token=c129b8c2-3e0e-4c26-95d1-fb767fdd7259";
+                                          formState.save();                                          
+                                          if(registerModel.password != _pass2.toString().trim()){
+                                            alert.alert.mostrarAlert(context, 'Password do not match');
+                                          } else {
+                                            setState((){
+                                              isLoading = true;
                                             });
-                                          }
-                                          prefs.setString("username", _name);
-                                          prefs.setString("email", _email);
-                                          prefs.setString("country", _country);
-                                          prefs.setString("photoURL", profilePicUrl.toString());
-                                          prefs.setString("city", _city);
 
-                                          FirebaseUser currentUser;
-                                          currentUser = await FirebaseAuth.instance
-                                            .createUserWithEmailAndPassword(
-                                                email: signupEmailController.text.trim(),
-                                                password: signupPasswordController.text.trim()
+                                            _submit();
+
+                                            Navigator.of(context).pushReplacement(
+                                              PageRouteBuilder(pageBuilder: (_, __, ___) => new bottomNavBar())
                                             );
-
-                                          Firestore
-                                              .instance
-                                              .collection("users")
-                                              .document(currentUser.uid)
-                                              .setData({
-                                                "uid": currentUser.uid,
-                                                "name": signupNameController.text,
-                                                "email": signupEmailController.text,
-                                                "password": signupPasswordController.text,
-                                                "country": signupCountryController.text,
-                                                "city": signupCityController.text,
-                                                "photoProfile": profilePicUrl.toString(),
-                                              })
-                                              .then((result) => {
-                                                Navigator.of(context).pushReplacement(
-                                                    PageRouteBuilder(
-                                                      pageBuilder: (_, __, ___) =>
-                                                        new bottomNavBar(
-                                                          idUser: currentUser.uid,
-                                                        )
-                                                    )
-                                                  ),
-                                                }
-                                              )
-                                              .catchError((err) => print(err));
+                                          }
                                         } catch (e) {
-                                          print(e.message);
-                                          print(_email);
-                                          print(_pass);
-
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: Text("SignUp Failed"),
-                                                content: Text(e.message),
-                                                actions: <Widget>[
-                                                  FlatButton(
-                                                    child: Text("Close"),
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  )
-                                                ],
-                                              );
-                                            }
-                                          );
-                                          } finally {
-                                              setState(() {
-                                              isLoading = false;
-                                              });
-                                            }
-                                        }
-                                        
-                                      } else {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: Text("Error"),
-                                                content: Text(
-                                                    "Please input all form"),
-                                                actions: <Widget>[
-                                                  FlatButton(
-                                                    child: Text("Close"),
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  )
-                                                ],
-                                              );
+                                            showDialogError(context, e.message);
+                                        } finally {
+                                            setState(() {
+                                            isLoading = false;
                                             });
-                                       }
+                                        }
+                                      } else {
+                                        showDialogError(context, "Please input all form");
+                                      }
                                     },
                                     child: Center(
-                                      child: Text("SIGNUP",
+                                      child: 
+                                        Text(
+                                          lang.signUp.toUpperCase(),
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontFamily: "Poppins-Bold",
-                                              fontSize: 18,
+                                              fontSize: 25,
                                               letterSpacing: 1.0)),
+                                          
                                     ),
                                   ),
                                 ),
@@ -815,12 +841,13 @@ class _signUpState extends State<signUp> {
                                       color: Color(0xFFD898F8), width: 1.0),
                                 ),
                                 child: Center(
-                                  child: Text("SignIn",
+                                  child: Text(
+                                      lang.signIn,
                                       style: TextStyle(
                                           color: Color(0xFFD898F8),
                                           fontWeight: FontWeight.w300,
                                           letterSpacing: 1.4,
-                                          fontSize: 15.0,
+                                          fontSize:20.0,
                                           fontFamily: "Sofia")),
                                 ),
                               ),
@@ -838,5 +865,4 @@ class _signUpState extends State<signUp> {
             ),
     );
   }
-  
 }

@@ -385,6 +385,7 @@ class _loginState extends State<login> {
                                       SharedPreferences prefs;
                                       prefs = await SharedPreferences.getInstance();
                                       final formState = _registerFormKey.currentState;
+                                      
                                       if (formState.validate()) {
                                         try {
                                           formState.save();

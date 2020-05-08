@@ -163,11 +163,11 @@ class _SplashScreenState extends State<SplashScreen> {
   void NavigatorPage() {
     FirebaseAuth.instance
         .currentUser()
-        .then((currentUser) => {
+        .then((currentUser) {
               if (currentUser == null)
                 {
                   Navigator.of(context).pushReplacement(PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => onBoarding()))
+                      pageBuilder: (_, __, ___) => onBoarding()));
                 }
               else
                 {
@@ -182,7 +182,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                   builder: (context) => bottomNavBar(
                                         idUser: currentUser.uid,
                                       ))))
-                      .catchError((err) => print(err))
+                      .catchError((err) => print(err));
                 }
             })
         .catchError((err) => print(err));

@@ -326,10 +326,12 @@ class _createEventState extends State<createEvent> {
     // print(eventModel.price);
      print( eventModel.date );
     if(eventModel.id == null){
-       productoService.createEevnet(eventModel).then((resp)=>{
+       productoService.createEevnet(eventModel).then((resp){
          if(resp){
-           _mostrarAlert(context, 'Success!', 'Evento creado', 'comprobado')
-         }else _mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz')
+           _mostrarAlert(context, 'Success!', 'Evento creado', 'comprobado');
+         }
+          else { _mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz');
+         }
        });
     }else{
       //productoProvider.actualizarProducto(producto);

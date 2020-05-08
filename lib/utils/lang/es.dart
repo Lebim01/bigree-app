@@ -55,4 +55,36 @@ class Es implements Lang.Language {
   @override
   String loading = 'Cargando';
 
+  @override
+  String signUp = 'Regístrate';
+
+  @override
+  String photoProfile = 'Foto de Perfil';
+
+  @override
+  String name = 'Nombre';
+
+  @override
+  String country = 'País';
+
+  @override
+  String city = 'Ciudad';
+
+  @override
+  String email = 'Correo Electrónico';
+
+  @override
+  String emailAddress = 'Dirección de Correo Electrónico';
+
+  @override
+  String password = 'Contraseña';
+
+  @override
+  String repeatPassword = 'Repetir Contraseña';
+
+  @override
+  String rememberMe = 'Recuérdame';
+
+  @override
+  String signIn = 'Registrarse';
 }
