@@ -2,6 +2,7 @@ import './es.dart' as Es;
 
 class Language {
   String logout;
+  String loading;
   // event
   String allEvents;
   String event;
@@ -49,6 +50,7 @@ class Lang implements Language {
     this.joined = lang.joined;
     this.join = lang.join;
     this.createdEvent = lang.createdEvent;
+    this.loading = lang.loading;
   }
 
   @override
@@ -100,6 +102,9 @@ class Lang implements Language {
   String join;
 
   @override
-  String createdEvent; 
+  String createdEvent;
+
+  @override
+  String loading; 
 
 }

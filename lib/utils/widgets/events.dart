@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:event_country/utils/widgets/eventDetail.dart' as eventDetail;
+import 'package:event_country/utils/models.dart' as models;
 
 String queryAllEventList = """
   {
@@ -220,24 +221,13 @@ class cardDataFirestore extends StatelessWidget {
         itemCount: list.length,
         itemBuilder: (context, i) {
 
-          int id = list[i]['id'].toInt();
-          String title = list[i]['title'];
-          String category = list[i]['category'];
-          String imageUrl = list[i]['image'];
-          String description = list[i]['descripcion'];
-          double price = list[i]['price'].toDouble();
-          String hours = list[i]['time'];
-          String date = list[i]['date'];
-          String location = list[i]['location'];
-          String description2 = '';
-          String description3 = '';
-          List usersJoinEvent = list[i]['UserEvents'];
+          models.Event event = models.Event(list[i]);
 
           return InkWell(
             onTap: () {
               Navigator.of(context).push(
                 PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => new eventDetail.EventDetailScreen(id),
+                  pageBuilder: (_, __, ___) => new eventDetail.EventDetailScreen(event.id),
                   transitionDuration: Duration(milliseconds: 600),
                   transitionsBuilder:
                       (_, Animation<double> animation, __, Widget child) {
@@ -254,7 +244,7 @@ class cardDataFirestore extends StatelessWidget {
               child: Stack(
                 children: <Widget>[
                   Hero(
-                    tag: 'hero-tag-$id',
+                    tag: 'hero-tag-${event.id}',
                     child: Material(
                       child: Container(
                         height: 390.0,
@@ -264,7 +254,7 @@ class cardDataFirestore extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
-                                image: NetworkImage(imageUrl),
+                                image: NetworkImage(event.image),
                                 fit: BoxFit.cover),
                             boxShadow: [
                               BoxShadow(
@@ -293,7 +283,7 @@ class cardDataFirestore extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              title,
+                              event.title,
                               style: TextStyle(
                                   fontSize: 19.0,
                                   fontFamily: "Sofia",
@@ -301,7 +291,7 @@ class cardDataFirestore extends StatelessWidget {
                             ),
                             SizedBox(height: 4.0),
                             Text(
-                              location,
+                              event.location,
                               style: TextStyle(
                                   fontSize: 14.0,
                                   fontFamily: "Sofia",
@@ -323,7 +313,7 @@ class cardDataFirestore extends StatelessWidget {
                             Padding(
                                 padding:
                                     EdgeInsets.only(top: 3.0, bottom: 30.0),
-                                child: BubblePeopleJoinEvent(usersJoinEvent)
+                                child: BubblePeopleJoinEvent(event.userEvents)
                             ),
                           ],
                         ),

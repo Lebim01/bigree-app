@@ -52,4 +52,7 @@ class Es implements Lang.Language {
   @override
   String createdEvent = 'Crear Evento';
 
+  @override
+  String loading = 'Cargando';
+
 }

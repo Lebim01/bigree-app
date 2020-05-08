@@ -9,28 +9,6 @@ import 'package:event_country/utils/models.dart' as models;
 
 final lang = Lang.Lang();
 
-String queryEvent = """
-  {
-    event(id: \$id){
-      id
-      title
-      description
-      price
-      location
-      image
-      date
-
-      UserEvents {
-        User {
-          name
-          email
-          image
-        }
-      }
-    }
-  }
-""";
-
 class PeopleJoinEvent extends StatelessWidget {
 
   PeopleJoinEvent({this.people});
@@ -206,7 +184,27 @@ class EventDetailScreen extends StatelessWidget {
         child: 
           Graphql.Query(
             options: Graphql.QueryOptions(
-              documentNode: Graphql.gql(queryEvent),
+              documentNode: Graphql.gql("""
+                {
+                  event(id: ${this.idEvent}){
+                    id
+                    title
+                    description
+                    price
+                    location
+                    image
+                    date
+
+                    UserEvents {
+                      User {
+                        name
+                        email
+                        image
+                      }
+                    }
+                  }
+                }
+              """),
               variables: {
                 'id': this.idEvent,
               }
