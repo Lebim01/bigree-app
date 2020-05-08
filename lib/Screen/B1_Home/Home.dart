@@ -4,9 +4,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:showcaseview/showcaseview.dart';
 
+import 'package:event_country/utils/widgets/profile.dart' as profile;
 import 'package:event_country/utils/widgets/events.dart' as EventWidget;
 import 'package:event_country/utils/lang/lang.dart' as Lang;
 import 'package:event_country/utils/widgets/appbar.dart' as AppBarWidget;
@@ -177,9 +177,7 @@ class _HomeState extends State<Home> {
           centerTitle: false,
           elevation: 0.0,
           actions: <Widget>[
-            photoProfile(
-              userId: widget.userId,
-            )
+            profile.photoProfile()
           ],
         ),
         body: SafeArea(
@@ -234,50 +232,6 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-  }
-}
-
-class photoProfile extends StatelessWidget {
-  String userId;
-
-  photoProfile({this.userId});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream:
-            Firestore.instance.collection('users').document(userId).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return new Text("Loading");
-          }
-          var userDocument = snapshot.data;
-          return Stack(children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0, top: 9.0),
-              child: InkWell(
-                  onTap: () {
-                  },
-                  child: Showcase(
-                    key: KeysToBeInherited.of(context).profileShowCase,
-                    description: "Photo Profile",
-                    child: Container(
-                      height: 40.0,
-                      width: 40.0,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                          image: DecorationImage(
-                              image: NetworkImage(userDocument[
-                                          "photoProfile"] !=
-                                      null
-                                  ? userDocument["photoProfile"]
-                                  : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"),
-                              fit: BoxFit.cover)),
-                    ),
-                  )),
-            ),
-          ]);
-        });
   }
 }
 

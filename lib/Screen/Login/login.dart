@@ -4,8 +4,6 @@ import 'package:event_country/Screen/Bottom_Nav_Bar/bottomNavBar.dart';
 import 'package:event_country/Screen/Login/signUp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -393,13 +391,22 @@ class _loginState extends State<login> {
                                           });
                                           String token = await login(_email.toString().trim(), _pass.toString().trim());
                                           prefs.setString("token", token);
+                                          myGraphql.httpLink = new Graphql.HttpLink(
+                                            uri: 'http://datatecblocks.xyz:4004/graphql',
+                                            headers:{
+                                              'Authorization': 'Bearer $token'
+                                            }
+                                          );
 
                                           Navigator.of(context).pushReplacement(
                                             PageRouteBuilder(pageBuilder: (_, __, ___) => new bottomNavBar())
                                           );
                                         }catch(err){
-                                          print(err);
                                           showDialogError(context, err);
+                                        }finally{
+                                          setState(() {
+                                            isLoading = false;
+                                          });
                                         }
                                       } else {
                                         showDialogError(context, "Please check your email and password");

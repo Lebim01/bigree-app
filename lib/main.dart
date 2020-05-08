@@ -5,14 +5,10 @@ import 'package:event_country/Screen/B3_Manage_Event/Create_Event.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Screen/Bottom_Nav_Bar/bottomNavBar.dart';
 import 'Screen/Login/OnBoarding.dart';
 import 'dart:io' show Platform;
-import 'package:event_country/graphql.dart' as graphql;
 
 /// Run first apps open
 void main() {
@@ -23,15 +19,6 @@ void main() {
 class myApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
-    ValueNotifier<GraphQLClient> client = ValueNotifier(
-      GraphQLClient(
-        cache: InMemoryCache(),
-        link: graphql.httpLink,
-      ),
-    );
-
-
     /// To set orientation always portrait
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -43,26 +30,23 @@ class myApp extends StatelessWidget {
       statusBarColor: Colors.transparent, //or set color with: Color(0xFF0000FF)
     ));
     
-    return new GraphQLProvider(
-      client: client,
-      child: MaterialApp(
-        title: "Event Country",
-        theme: ThemeData(
-            brightness: Brightness.light,
-            backgroundColor: Colors.white,
-            primaryColorLight: Colors.white,
-            primaryColorBrightness: Brightness.light,
-            primaryColor: Colors.white),
-        debugShowCheckedModeBanner: false,
-        home: SplashScreen(),
+    return new MaterialApp(
+      title: "Event Country",
+      theme: ThemeData(
+          brightness: Brightness.light,
+          backgroundColor: Colors.white,
+          primaryColorLight: Colors.white,
+          primaryColorBrightness: Brightness.light,
+          primaryColor: Colors.white),
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
 
-        /// Move splash screen to ChoseLogin Layout
-        /// Routes
-        routes: <String, WidgetBuilder>{
-          "login": (BuildContext context) => new SplashScreen(),
-          "createEvent": (BuildContext context) => new createEvent() 
-        },
-      )
+      /// Move splash screen to ChoseLogin Layout
+      /// Routes
+      routes: <String, WidgetBuilder>{
+        "login": (BuildContext context) => new SplashScreen(),
+        "createEvent": (BuildContext context) => new createEvent() 
+      },
     );
   }
 }
@@ -144,11 +128,9 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPreferences prefs;
     prefs = await SharedPreferences.getInstance();
     this.setState(() {
-      if (prefs.getString("username") != null) {
-        print('false');
+      if (prefs.getString("token") != null) {
         _checkUser = false;
       } else {
-        print('true');
         _checkUser = true;
       }
     });
@@ -160,32 +142,24 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   /// Navigate user if already login or no
-  void NavigatorPage() {
-    FirebaseAuth.instance
-        .currentUser()
-        .then((currentUser) => {
-              if (currentUser == null)
-                {
-                  Navigator.of(context).pushReplacement(PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => onBoarding()))
-                }
-              else
-                {
-                  Firestore.instance
-                      .collection("users")
-                      .document(currentUser.uid)
-                      .get()
-                      .then((DocumentSnapshot result) =>
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => bottomNavBar(
-                                        idUser: currentUser.uid,
-                                      ))))
-                      .catchError((err) => print(err))
-                }
-            })
-        .catchError((err) => print(err));
+  void NavigatorPage() async {
+    SharedPreferences prefs;
+    prefs = await SharedPreferences.getInstance();
+    
+    String token = prefs.getString("token");
+
+    if (token == null || token == ""){
+      // Go to login
+      Navigator.of(context).pushReplacement(PageRouteBuilder(pageBuilder: (_, __, ___) => onBoarding()));
+    }
+    else{     
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => bottomNavBar()
+        )
+      );
+    }
   }
 
   /// Code Create UI Splash Screen
