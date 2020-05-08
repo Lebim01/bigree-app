@@ -6,9 +6,8 @@ import 'package:http/http.dart' as http;
 
 
 final String _url = 'http://datatecblocks.xyz:4004/graphql';
-
 final _getregister = """{
-    events {
+    ?query=events {
           id,
           title,
           description,
@@ -25,34 +24,29 @@ class RegisterServices{
   Future<bool> createRegister(RegisterModel register) async {
     
     try {
-      final String query = '?query = mutation {register(username: "${register.username}",password: "${register.password}",name: "${register.password}"){usermane password name}}'; 
-      final url = '$_url$query';
-      print(url);
+      final mutation = '?query=mutation {register(username : "${register.username}", password: "${register.password}", name: "${register.name}"){id}}';      
+      final url = '$_url$mutation';
       final resp = await http.post(url);
-      final decodeData = json.decode(resp.body);
-      
-        if(resp.statusCode != 200 && resp.statusCode != 201){
-          print('algo salio mal');
-          return false;
-        }
-        return true;
+      //final decodeData = json.decode(resp.body);
 
-       //print(decodeData);
-
+      if(resp.statusCode != 200 && resp.statusCode != 201){
+        print('algo salio mal');
+        return false;
+      }
+          
+      return true;
+    
     } catch(e) {
       print('este es el error' + e);
     }
   }
 
-
-
- Future<List<RegisterModel>> getRegister()async{
-   final url = '$_url?query=$_getregister';
-   final resp = await http.get(url);
+ Future<List<RegisterModel>> getRegister() async {
+    final url = '$_url$_getregister';
+    final resp = await http.get(url);
 
     final decodedData = json.decode(resp.body);
-    print(decodedData);
-
+    print("ESTO ES LO QUE IMPRIME" + decodedData);
     return [];
  }
 }

@@ -95,18 +95,12 @@ class _signUpState extends State<signUp> {
   bool _obscureTextSignup = true;
   bool _obscureTextSignupConfirm = true;
 
-  ///
-  /// Show password
-  ///
   void _toggleSignup() {
     setState(() {
       _obscureTextSignup = !_obscureTextSignup;
     });
   }
 
-  ///
-  /// Show password
-  ///
   void _toggleSignupConfirm() {
     setState(() {
       _obscureTextSignupConfirm = !_obscureTextSignupConfirm;
@@ -144,84 +138,6 @@ class _signUpState extends State<signUp> {
           color: Colors.black26.withOpacity(.2),
         ),
       );
-
-  
-   void _submit()async { 
-     print("holA");
-
-    if(!formKey.currentState.validate()) return;
-    formKey.currentState.save();
-    
-    // setState(() {
-    //   _guardando = true;
-    // });
-
-    if(registerModel.username != null){
-       productoService.createRegister(registerModel).then((resp){
-         if(resp){
-           print("Registro guardado");
-            //_mostrarAlert(contex, 'Success!', 'Evento creado', 'comprobado');
-         }
-          else { 
-            //_mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz');
-            print("Error al guardar registro");
-         }
-       });
-    } else {
-      
-    }
-
-  }
-
-  void _mostrarAlert(BuildContext context,String titulo, String text, String img){
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context){
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          title: Text('$titulo'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text('$text'),
-               SizedBox(height: 10.0),
-            ],
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Ok'),
-                onPressed: (){
-                  Navigator.of(context).pop();
-                  Navigator.pop(context);
-                },
-                )
-            ],
-        );
-      }
-    );
-  } 
-
-
-  void showDialogError(context, text){
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Error"),
-          content: Text(text),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        );
-      }
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -864,5 +780,80 @@ class _signUpState extends State<signUp> {
               ],
             ),
     );
+  }
+
+  void _submit()async { 
+    if(!formKey.currentState.validate()) return;
+      
+    formKey.currentState.save();
+
+    if(registerModel.username != null && registerModel.password != null){
+       productoService.createRegister(registerModel).then((resp){
+         if(resp){
+            _mostrarAlert(context, 'Success!', 'Evento creado', 'comprobado');
+         }
+          else { 
+            _mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz');
+         }
+       });
+    }
+  }
+
+  void showDialogError(context, text){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(text),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
+
+
+  void _mostrarAlert(context,String titulo, String text, String img){
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context){
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          title: Text('$titulo'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+                Text('$text'),
+                SizedBox(height: 10.0),
+                image(img)
+              ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                  child: Text('Ok'),
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                    Navigator.pop(context);
+                  },
+                )
+            ],
+        );
+      }
+    );
+  } 
+
+  Widget image(String img){
+    return Image(
+      image: AssetImage('assets/image/$img.png'),
+      width: 100,
+      );
   }
 }
