@@ -21,7 +21,7 @@ dependencies:
     sdk: flutter
   graphql_flutter: ^3.0.0
   notifier: ^1.0.2
-  moment: ^0.0.1
+  intl: ^0.16.1
   font_awesome_flutter: ^8.0.1
   shimmer: ^0.0.6
   firebase_auth: ^0.11.1+10

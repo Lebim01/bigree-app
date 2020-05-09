@@ -7,7 +7,7 @@ import 'package:event_country/utils/widgets/eventDetail/buttonPay.dart' as butto
 import 'package:event_country/utils/widgets/sliver.dart' as sliver;
 import 'package:event_country/utils/models.dart' as models;
 
-final lang = Lang.Lang();
+final _lang = Lang.Lang();
 
 class PeopleJoinEvent extends StatelessWidget {
 
@@ -227,8 +227,9 @@ class EventDetailScreen extends StatelessWidget {
   }
 }
 
-Widget detailScreen(context, event){
+Widget detailScreen(context, models.Event event){
   double _height = MediaQuery.of(context).size.height;
+
   return Stack(
     children: <Widget>[
       CustomScrollView(
@@ -285,7 +286,7 @@ Widget detailScreen(context, event){
 
                 /** FECHA Y HORA */
                 ListItem(
-                  title: event.date,
+                  title: event.dateFormated,
                   subtitle: event.time,
                   icon: Icon(
                     Icons.calendar_today,
@@ -297,7 +298,7 @@ Widget detailScreen(context, event){
 
                 /** UBICACIÓN */
                 ListItem(
-                  title: lang.location, 
+                  title: _lang.location, 
                   subtitle: event.location,
                   icon: Icon(
                     Icons.place,
@@ -352,7 +353,7 @@ Widget detailScreen(context, event){
                 Padding(
                   padding: EdgeInsets.only(top: 30.0, left: 20.0),
                   child: Text(
-                    lang.about,
+                    _lang.about,
                     style: TextStyle(
                       fontSize: 19.0,
                       fontWeight: FontWeight.w600,
