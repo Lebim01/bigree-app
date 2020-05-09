@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_country/Library/loader_animation/dot.dart';
 import 'package:event_country/Library/loader_animation/loader.dart';
 import 'package:event_country/Screen/B1_Home/Home_Search/searchBoxEmpty.dart';
+import 'package:event_country/utils/models.dart';
 import 'package:flutter/material.dart';
 
-import '../Detail_Event.dart';
-
-import '../../../utils/lang/lang.dart' as Lang;
+import 'package:event_country/utils/lang/lang.dart' as Lang;
+import 'package:graphql_flutter/graphql_flutter.dart' as Graphql;
+import 'package:event_country/utils/widgets/eventDetail.dart' as eventDetail;
 
 final lang = Lang.Lang();
 
@@ -18,7 +18,7 @@ class searchPage extends StatefulWidget {
 
 class _searchPageState extends State<searchPage> {
   TextEditingController _addNameController;
-  String searchString;
+  String searchString = '';
 
   bool load = true;
   @override
@@ -117,226 +117,242 @@ class _searchPageState extends State<searchPage> {
                 ),
               ),
             ),
-            StreamBuilder<QuerySnapshot>(
-              stream: (searchString == null || searchString.trim() == "")
-                  ? Firestore.instance.collection("event").snapshots()
-                  : Firestore.instance
-                      .collection("event")
-                      .where("searchIndex", arrayContains: searchString)
-                      .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+            Graphql.Query(
+              options: Graphql.QueryOptions(
+                documentNode: Graphql.gql("""
+                  query search(\$searchString: String){
+                    events(search: \$searchString) {
+                      id
+                      title
+                      description
+                      price
+                      location
+                      image
+                      date
+
+                      UserEvents {
+                        User {
+                          name
+                          email
+                          image
+                        }
+                      }
+                    }
+                  }
+                """),
+                variables: {
+                  'searchString': searchString
+                }
+              ),
+              builder: (Graphql.QueryResult result, { VoidCallback refetch, Graphql.FetchMore fetchMore }) {
+                if (result.hasException) return Text('Error: ${result.exception.toString()}');
+
                 if (searchString == null)
                   return searchBoxEmpty();
+
                 if (searchString.trim() == "")
                   return searchBoxEmpty();
-                if (snapshot.data.documents.isEmpty) return noItem();
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
+
+                if (result.loading) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 110.0),
+                    child: Center(
+                        child: ColorLoader5(
+                      dotOneColor: Colors.red,
+                      dotTwoColor: Colors.blueAccent,
+                      dotThreeColor: Colors.green,
+                      dotType: DotType.circle,
+                      dotIcon: Icon(Icons.adjust),
+                      duration: Duration(seconds: 1),
+                    )),
+                  );
+                }
+
+                List data = result.data['events'];
+                
+                if(data.length == 0) return noItem();
+                
+                return Column(
+                  children: data.map((row) {
+                    Event event = Event(row);
                     return Padding(
-                      padding: const EdgeInsets.only(top: 110.0),
-                      child: Center(
-                          child: ColorLoader5(
-                        dotOneColor: Colors.red,
-                        dotTwoColor: Colors.blueAccent,
-                        dotThreeColor: Colors.green,
-                        dotType: DotType.circle,
-                        dotIcon: Icon(Icons.adjust),
-                        duration: Duration(seconds: 1),
-                      )),
-                    );
-                  default:
-                    return new Column(
-                        children: snapshot.data.documents
-                            .map((DocumentSnapshot document) {
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20.0, right: 20.0, top: 15.0, bottom: 5.0),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                  pageBuilder: (_, __, ___) =>
-                                      new newsHeaderListDetail(
-                                        category: document['category'],
-                                        desc: document['desc1'],
-                                        desc2: document['desc2'],
-                                        desc3: document['desc3'],
-                                        price: document['price'],
-                                        imageUrl: document['imageUrl'],
-                                        time: document['time'],
-                                        date: document['date'],
-                                        place: document['place'],
-                                        title: document['title'],
-                                        id: document['id'],
-                                      ),
-                                  transitionDuration:
-                                      Duration(milliseconds: 600),
-                                  transitionsBuilder: (_,
-                                      Animation<double> animation,
-                                      __,
-                                      Widget child) {
-                                    return Opacity(
-                                      opacity: animation.value,
-                                      child: child,
-                                    );
-                                  }),
-                            );
-                          },
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12.withOpacity(0.1),
-                                    blurRadius: 1.0,
-                                    spreadRadius: 1.0)
-                              ],
+                      padding: const EdgeInsets.only(
+                        left: 20.0, 
+                        right: 20.0, 
+                        top: 15.0, 
+                        bottom: 5.0
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) => eventDetail.EventDetailScreen(event.id),
+                              transitionDuration: Duration(milliseconds: 600),
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
+                                return Opacity(
+                                  opacity: animation.value,
+                                  child: child,
+                                );
+                              }
                             ),
-                            child: Row(
-                              children: <Widget>[
-                                Hero(
-                                  tag: 'hero-tag-${document['id']}',
-                                  child: Material(
-                                    child: Container(
-                                      height: 180.0,
-                                      width: 120.0,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                                document['imageUrl']),
-                                            fit: BoxFit.cover),
-                                      ),
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black12.withOpacity(0.1),
+                                  blurRadius: 1.0,
+                                  spreadRadius: 1.0)
+                            ],
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Hero(
+                                tag: 'hero-tag-${event.id}',
+                                child: Material(
+                                  child: Container(
+                                    height: 180.0,
+                                    width: 120.0,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: NetworkImage(event.image),
+                                          fit: BoxFit.cover),
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 20.0, left: 20.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        width: 174.0,
-                                        child: Text(
-                                          document['title'],
-                                          style: TextStyle(
-                                            fontFamily: "Sofia",
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 20.0, left: 20.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      width: 174.0,
+                                      child: Text(
+                                        event.title,
+                                        style: TextStyle(
+                                          fontFamily: "Sofia",
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
-                                      SizedBox(
-                                        height: 15.0,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.location_on,
-                                            size: 16.0,
-                                            color: Colors.black38,
-                                          ),
-                                          SizedBox(
-                                            width: 5.0,
-                                          ),
-                                          Container(
-                                            width: 150.0,
-                                            child: Text(
-                                              document['place'],
-                                              style: TextStyle(
-                                                fontFamily: "Sofia",
-                                                fontSize: 14.0,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 5.0,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.date_range,
-                                            size: 16.0,
-                                            color: Colors.black38,
-                                          ),
-                                          SizedBox(
-                                            width: 5.0,
-                                          ),
-                                          Container(
-                                            width: 150.0,
-                                            child: Text(
-                                              document['date'],
-                                              style: TextStyle(
-                                                fontFamily: "Sofia",
-                                                fontSize: 13.0,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 10.0,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.location_on,
-                                            size: 16.0,
-                                            color: Colors.black38,
-                                          ),
-                                          SizedBox(
-                                            width: 5.0,
-                                          ),
-                                          Text(
-                                            document['price'],
+                                    ),
+                                    SizedBox(
+                                      height: 15.0,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.location_on,
+                                          size: 16.0,
+                                          color: Colors.black38,
+                                        ),
+                                        SizedBox(
+                                          width: 5.0,
+                                        ),
+                                        Container(
+                                          width: 150.0,
+                                          child: Text(
+                                            event.location,
                                             style: TextStyle(
                                               fontFamily: "Sofia",
-                                              fontSize: 15.0,
+                                              fontSize: 14.0,
                                               fontWeight: FontWeight.w400,
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 10.0,
-                                      )
-                                    ],
-                                  ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.date_range,
+                                          size: 16.0,
+                                          color: Colors.black38,
+                                        ),
+                                        SizedBox(
+                                          width: 5.0,
+                                        ),
+                                        Container(
+                                          width: 150.0,
+                                          child: Text(
+                                            event.dateFormated,
+                                            style: TextStyle(
+                                              fontFamily: "Sofia",
+                                              fontSize: 13.0,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10.0,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.credit_card,
+                                          size: 16.0,
+                                          color: Colors.black38,
+                                        ),
+                                        SizedBox(
+                                          width: 5.0,
+                                        ),
+                                        Text(
+                                          event.price.toString(),
+                                          style: TextStyle(
+                                            fontFamily: "Sofia",
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10.0,
+                                    )
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    }).toList());
-                }
-              },
+                      ),
+                    );
+                  }).toList()
+                );
+              }
             )
-          ],
-        ),
-      ),
+          ]
+        )
+      )
     );
   }
 }

@@ -15,7 +15,7 @@ import 'package:event_country/graphql.dart' as myGraphql;
 class TokenNotification extends Notification {}
 
 /// Run first apps open
-void main() async {
+void main() {
   runApp(myApp());
 }
 
@@ -53,7 +53,8 @@ class myAppState extends State<myApp> {
     ValueNotifier<GraphQLClient> client = ValueNotifier(
       GraphQLClient(
         cache: InMemoryCache(),
-        link: myGraphql.httpLink,
+        link: myGraphql.link,
+        
       ),
     );
     

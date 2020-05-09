@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Event {
   int id;
   String title;
@@ -5,7 +7,10 @@ class Event {
   String image;
   double price;
   String location;
-  String date;
+
+  String date; 
+  String dateFormated;
+
   String time;
   List userEvents;
   
@@ -20,7 +25,10 @@ class Event {
     this.price = event['price'].toDouble();
     this.location = event['location'].toString();
     this.date = event['date'].toString();
+    this.dateFormated = DateFormat("dd 'de' MMMM yyyy").format(DateTime.parse(this.date));
     this.time = "";
     this.userEvents = event['UserEvents'].toList();
+
+    print(this.dateFormated);
   }
 }

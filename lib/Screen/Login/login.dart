@@ -82,7 +82,7 @@ class _loginState extends State<login> {
       throw queryResult.exception.graphqlErrors[0].message;
     }
     
-    return queryResult.data['token'].toString();
+    return queryResult.data['login']['token'].toString();
   }
 
   Widget radioButton(bool isSelected) => Container(
@@ -397,10 +397,10 @@ class _loginState extends State<login> {
                                           setState(() {
                                             isLoading = true;
                                           });
+
                                           String token = await login(_email.toString().trim(), _pass.toString().trim());
                                           prefs.setString("token", token);
                                           
-
                                           Navigator.of(context).pushReplacement(
                                             PageRouteBuilder(pageBuilder: (_, __, ___) => new bottomNavBar())
                                           );
