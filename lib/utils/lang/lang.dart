@@ -3,6 +3,10 @@ import './es.dart' as Es;
 class Language {
   String logout;
   String loading;
+  String login;
+  //on boarding
+  String skip;
+  String done;
   // event
   String allEvents;
   String event;
@@ -13,6 +17,10 @@ class Language {
   String join;
   String joined;
   String createdEvent;
+  String title;
+  String description;
+  String date;
+  String price;
   // profile
   String profile;
   String editProfile;
@@ -74,6 +82,13 @@ class Lang implements Language {
     this.repeatPassword = lang.repeatPassword;
     this.rememberMe = lang.rememberMe;
     this.signIn = lang.signIn;
+    this.skip = lang.skip;
+    this.done = lang.done;
+    this.login = lang.login;
+    this.title = lang.title;
+    this.description = lang.description;
+    this.date = lang.date;
+    this.price = lang.price;
   }
 
   @override
@@ -162,4 +177,25 @@ class Lang implements Language {
 
   @override
   String signIn;
+
+  @override
+  String skip;
+
+  @override
+  String done;
+
+  @override
+  String login;
+
+  @override
+  String title;
+
+  @override
+  String description;
+
+  @override
+  String date;
+
+  @override
+  String price;
 }

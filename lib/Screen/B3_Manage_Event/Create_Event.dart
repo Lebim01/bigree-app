@@ -102,7 +102,8 @@ class _createEventState extends State<createEvent> {
           size: 29.0,
           color: Colors.black45,
         ),
-        hintText: "Title event",
+        hintText: 
+        lang.title,
         hintStyle: TextStyle(
             fontFamily: "Sofia",
             fontSize: 15.0),
@@ -133,7 +134,7 @@ class _createEventState extends State<createEvent> {
           size: 29.0,
           color: Colors.black45,
         ),
-        hintText: "Description event",
+        hintText: lang.description,
         hintStyle: TextStyle(
             fontFamily: "Sofia",
             fontSize: 15.0),
@@ -163,7 +164,7 @@ class _createEventState extends State<createEvent> {
           size: 29.0,
           color: Colors.black45,
         ),
-        hintText: "Location event",
+        hintText: lang.location,
         hintStyle: TextStyle(
             fontFamily: "Sofia",
             fontSize: 15.0),
@@ -193,7 +194,7 @@ class _createEventState extends State<createEvent> {
           size: 29.0,
           color: Colors.black45,
         ),
-        hintText: "Date event",
+        hintText: lang.date,
         hintStyle: TextStyle(
             fontFamily: "Sofia",
             fontSize: 15.0),
@@ -284,7 +285,7 @@ class _createEventState extends State<createEvent> {
           size: 29.0,
           color: Colors.black45,
         ),
-        hintText: "Location event",
+        hintText: lang.price,
         hintStyle: TextStyle(
             fontFamily: "Sofia",
             fontSize: 15.0),

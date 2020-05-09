@@ -758,7 +758,7 @@ class _signUpState extends State<signUp> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                      lang.signIn,
+                                      lang.login,
                                       style: TextStyle(
                                           color: Color(0xFFD898F8),
                                           fontWeight: FontWeight.w300,

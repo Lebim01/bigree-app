@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:graphql_flutter/graphql_flutter.dart' as Graphql;
 import 'package:event_country/graphql.dart' as myGraphql;
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
 
 class login extends StatefulWidget {
   @override
@@ -170,7 +172,8 @@ class _loginState extends State<login> {
                         Row(
                           children: <Widget>[
                             SizedBox(height: 20.0),
-                            Text("Event",
+                            Text(
+                                lang.event,
                                 style: TextStyle(
                                     fontFamily: "Popins",
                                     fontSize:
@@ -208,22 +211,23 @@ class _loginState extends State<login> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Container(
-                                    width: 120.0,
-                                    height: 45.0,
+                                    width: 250.0,
+                                    height: 70.0,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.only(
                                           bottomRight: Radius.circular(80.0)),
                                       color: Color(0xFFD898F8),
                                     ),
                                     child: Center(
-                                      child: Text("Login",
+                                      child: Text(
+                                          lang.login,
                                           style: TextStyle(
                                               fontSize: ScreenUtil.getInstance()
-                                                  .setSp(36),
+                                                  .setSp(25),
                                               fontFamily: "Popins",
-                                              fontWeight: FontWeight.w600,
+                                              fontWeight: FontWeight.w500,
                                               color: Colors.white,
-                                              letterSpacing: .63)),
+                                              letterSpacing: .60)),
                                     ),
                                   ),
                                   SizedBox(
@@ -239,7 +243,8 @@ class _loginState extends State<login> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        Text("Email",
+                                        Text(
+                                            lang.email,
                                             style: TextStyle(
                                                 fontFamily: "Popins",
                                                 fontSize:
@@ -270,7 +275,7 @@ class _loginState extends State<login> {
                                               color: Colors.black45,
                                               size: 20.0,
                                             ),
-                                            hintText: "Email Address",
+                                            hintText: lang.emailAddress,
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sans",
                                                 fontSize: 15.0,
@@ -282,7 +287,8 @@ class _loginState extends State<login> {
                                           height: ScreenUtil.getInstance()
                                               .setHeight(30),
                                         ),
-                                        Text("Password",
+                                        Text(
+                                            lang.password,
                                             style: TextStyle(
                                                 fontFamily: "Popins",
                                                 fontSize:
@@ -309,7 +315,7 @@ class _loginState extends State<login> {
                                               size: 20.0,
                                               color: Colors.black45,
                                             ),
-                                            hintText: "Password",
+                                            hintText: lang.password,
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sans",
                                                 fontSize: 16.0,
@@ -353,7 +359,8 @@ class _loginState extends State<login> {
                                 SizedBox(
                                   width: 8.0,
                                 ),
-                                Text("Remember me",
+                                Text(
+                                    lang.rememberMe,
                                     style: TextStyle(
                                         fontSize: 12,
                                         fontFamily: "Poppins-Medium"))
@@ -405,7 +412,8 @@ class _loginState extends State<login> {
                                       }
                                     },
                                     child: Center(
-                                      child: Text("SIGNIN",
+                                      child: Text(
+                                          lang.login.toUpperCase(),
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontFamily: "Poppins-Bold",
@@ -460,7 +468,8 @@ class _loginState extends State<login> {
                                       color: Color(0xFFD898F8), width: 1.0),
                                 ),
                                 child: Center(
-                                  child: Text("SignUp",
+                                  child: Text( 
+                                      lang.signUp,
                                       style: TextStyle(
                                           color: Color(0xFFD898F8),
                                           fontWeight: FontWeight.w300,

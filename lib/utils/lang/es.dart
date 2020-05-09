@@ -87,4 +87,25 @@ class Es implements Lang.Language {
 
   @override
   String signIn = 'Registrarse';
+
+  @override
+  String skip = 'Omitir';
+
+  @override
+  String done = 'Hecho';
+
+  @override
+  String login = 'Iniciar Sesión';
+
+  @override
+  String title = 'Titulo';
+
+  @override
+  String description = 'Descripción';
+
+  @override
+  String date = 'Fecha';
+
+  @override
+  String price = 'Precio';
 }

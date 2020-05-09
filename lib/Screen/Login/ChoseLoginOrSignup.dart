@@ -3,6 +3,9 @@ import 'package:event_country/Screen/Login/login.dart';
 import 'package:event_country/Screen/Login/signUp.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_pro/carousel_pro.dart';
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
 
 class ChoseLogin extends StatefulWidget {
   @override
@@ -123,7 +126,7 @@ class _ChoseLoginState extends State<ChoseLogin> with TickerProviderStateMixin {
                                 Center(
                                   /// Animation text event country accept from splashscreen layout (Click to open code)
                                   child: Hero(
-                                    tag: "Event",
+                                    tag: lang.event,
                                     child: Text(
                                       "Event Country",
                                       style: TextStyle(
@@ -176,7 +179,7 @@ class _ChoseLoginState extends State<ChoseLogin> with TickerProviderStateMixin {
                                           _Playanimation();
                                           return tapLogin;
                                         },
-                                        child: ButtonCustom(txt: "Signup"),
+                                        child: ButtonCustom(txt: lang.signUp),
                                       ),
                                     )
                                   : AnimationSplashSignup(
@@ -235,7 +238,7 @@ class _ChoseLoginState extends State<ChoseLogin> with TickerProviderStateMixin {
                                       _Playanimation();
                                       return tapSignup;
                                     },
-                                    child: ButtonCustom(txt: "Login"),
+                                    child: ButtonCustom(txt: lang.login),
                                   ),
                                 )
                               : AnimationSplashLogin(

@@ -2,6 +2,9 @@ import 'package:event_country/Library/intro_views_flutter-2.4.0/lib/Models/page_
 import 'package:event_country/Library/intro_views_flutter-2.4.0/lib/intro_views_flutter.dart';
 import 'package:flutter/material.dart';
 import 'ChoseLoginOrSignup.dart';
+import '../../utils/lang/lang.dart' as Lang;
+
+final lang = Lang.Lang();
 
 class onBoarding extends StatefulWidget {
   @override
@@ -97,7 +100,7 @@ class _onBoardingState extends State<onBoarding> {
       pages,
       pageButtonsColor: Colors.black45,
       skipText: Text(
-        "SKIP",
+        lang.skip.toUpperCase(),
         style: _fontDescriptionStyle.copyWith(
             color: Color(0xFF928CEF),
             fontWeight: FontWeight.w800,
@@ -105,7 +108,7 @@ class _onBoardingState extends State<onBoarding> {
             fontSize: 17.0),
       ),
       doneText: Text(
-        "DONE",
+        lang.done.toUpperCase(),
         style: _fontDescriptionStyle.copyWith(
             color: Color(0xFF928CEF),
             fontWeight: FontWeight.w800,
