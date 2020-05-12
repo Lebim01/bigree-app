@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
+import 'package:event_country/graphql.dart' as Graphql;
 import 'package:event_country/utils/widgets/profile.dart' as profile;
 import 'package:event_country/utils/widgets/events.dart' as EventWidget;
 import 'package:event_country/utils/lang/lang.dart' as Lang;
@@ -220,9 +221,12 @@ class _HomeState extends State<Home> {
                             fontFamily: "Sofia",
                             color: Colors.deepPurpleAccent)
                         )
-                      )
+                      ),
                     ],
                   ),
+                  EventWidget.AllEventList(
+                    Graphql.EventOptions(popular: true)
+                  )
                 ],
               ),
             ),
