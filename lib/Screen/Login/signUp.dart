@@ -72,7 +72,8 @@ class _signUpState extends State<signUp> {
       setState(() {
         selectedImage = tempImage;
         filename = basename(selectedImage.path);
-        uploadImage();
+        var image = uploadImage().toString();
+        print("THIS IS IMAGE " + image);
 
         retrieveLostData();
       });
@@ -88,6 +89,7 @@ class _signUpState extends State<signUp> {
     StorageUploadTask uploadTask = firebaseStorageRef.putFile(selectedImage);
     var dowurl = await (await uploadTask.onComplete).ref.getDownloadURL();
     profilePicUrl = dowurl.toString();
+    registerModel.image = profilePicUrl;
     print("download url = $profilePicUrl");
     return profilePicUrl;
   }
@@ -407,7 +409,7 @@ class _signUpState extends State<signUp> {
                                               return 'Please input your country';
                                             }
                                           },
-                                          onSaved: (input) => _country = input,
+                                          onSaved: (value) => registerModel.country = value,
                                           controller: signupCountryController,
                                           keyboardType: TextInputType.text,
                                           textCapitalization:
@@ -447,7 +449,7 @@ class _signUpState extends State<signUp> {
                                               return 'Please input your city';
                                             }
                                           },
-                                          onSaved: (input) => _city = input,
+                                          onSaved: (value) => registerModel.city = value,
                                           controller: signupCityController,
                                           keyboardType: TextInputType.text,
                                           textCapitalization:
@@ -782,7 +784,7 @@ class _signUpState extends State<signUp> {
     );
   }
 
-  void _submit()async { 
+  void _submit() async { 
     if(!formKey.currentState.validate()) return;
       
     formKey.currentState.save();
