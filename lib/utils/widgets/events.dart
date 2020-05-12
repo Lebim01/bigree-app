@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:event_country/graphql.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -8,28 +9,6 @@ import 'package:graphql_flutter/graphql_flutter.dart' as Graphql;
 import 'package:shimmer/shimmer.dart';
 import 'package:event_country/utils/widgets/eventDetail.dart' as eventDetail;
 import 'package:event_country/utils/models.dart' as models;
-
-String queryAllEventList = """
-  {
-    events {
-      id
-      title
-      description
-      price
-      location
-      image
-      date
-
-      UserEvents {
-        User {
-          name
-          email
-          image
-        }
-      }
-    }
-  }
-""";
 
 class peopleJoinEvent extends StatelessWidget {
 
@@ -382,13 +361,18 @@ class _allEventsListStateScreen extends State<AllEventListScreen> {
 }
 
 class AllEventList extends StatefulWidget {
+
+  EventOptions options = new EventOptions();
+  AllEventList([options]);
+
   @override
-  _allEventsListState createState() => _allEventsListState();
+  _allEventsListState createState() => _allEventsListState(options);
 }
 
 class _allEventsListState extends State<AllEventList> {
 
-  _allEventsListState();
+  EventOptions options = new EventOptions();
+  _allEventsListState([options]);
 
   @override
   bool loadImage = true;
@@ -406,9 +390,32 @@ class _allEventsListState extends State<AllEventList> {
 
   @override
   Widget build(BuildContext context) {
+    String queryOptions = this.options.toString();
+
     return Graphql.Query(
       options: Graphql.QueryOptions(
-        documentNode: Graphql.gql(queryAllEventList),
+        documentNode: Graphql.gql("""
+          {
+            events $queryOptions {
+              id
+              title
+              description
+              price
+              capacity
+              location
+              image
+              date
+
+              UserEvents {
+                User {
+                  name
+                  email
+                  image
+                }
+              }
+            }
+          }
+        """),
       ),
       builder: (Graphql.QueryResult result, { VoidCallback refetch, Graphql.FetchMore fetchMore }) {
         if (result.loading) {

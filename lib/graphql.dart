@@ -5,6 +5,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 typedef GetHeaders = Future<Map<String, String>> Function();
 
+class EventOptions {
+  bool own = false;
+  bool popular = false;
+  String search = "";
+
+  EventOptions({
+    this.search, 
+    this.own, 
+    this.popular
+  });
+
+  toString(){
+    List<String> options = [];
+
+    if(search != '' && search != null) options.add('search: "${this.search}"');
+    if(own != null) options.add('own: ${this.own}');
+    if(popular != null) options.add('popular: ${this.popular}');
+
+    return options.length > 1 ? "(" + options.join(',') + ")" : "";
+  }
+}
+
 class JWTAuthLink extends Link {
   JWTAuthLink({ this.getHeaders }) : super(
     request: (Operation operation, [NextLink forward]) {
