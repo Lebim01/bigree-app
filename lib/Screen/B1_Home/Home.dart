@@ -12,6 +12,8 @@ import 'package:event_country/utils/widgets/events.dart' as EventWidget;
 import 'package:event_country/utils/lang/lang.dart' as Lang;
 import 'package:event_country/utils/widgets/appbar.dart' as AppBarWidget;
 
+import 'Home_Search/search_page.dart';
+
 final lang = Lang.Lang();
 
 ///
@@ -193,6 +195,13 @@ class _HomeState extends State<Home> {
                     height: 15.0,
                   ),
                   InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) => searchPage()
+                        )
+                      );
+                    },
                     child: search()
                   ),
                   SizedBox(
