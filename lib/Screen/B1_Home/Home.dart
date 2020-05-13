@@ -70,7 +70,6 @@ class _HomeState extends State<Home> {
     subscription =
         connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       _connectionStatus = result.toString();
-      print(_connectionStatus);
       if (result == ConnectivityResult.wifi ||
           result == ConnectivityResult.mobile) {
         setState(() {
@@ -161,6 +160,8 @@ class _HomeState extends State<Home> {
       }
     });
 
+    final GlobalKey<EventWidget.allEventsListState> key = GlobalKey<EventWidget.allEventsListState>();
+
     return KeysToBeInherited(
       profileShowCase: _profileShowCase,
       searchShowCase: _searchShowCase,
@@ -234,6 +235,7 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                   EventWidget.AllEventList(
+                    key,
                     Graphql.EventOptions(popular: true)
                   )
                 ],

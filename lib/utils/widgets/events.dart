@@ -188,13 +188,17 @@ Widget _loadingDataHeader(BuildContext context) {
 
 class cardDataFirestore extends StatelessWidget {
   
-  cardDataFirestore({this.list});
+  VoidCallback refresh;
+
+  cardDataFirestore({this.list, this.refresh});
 
   final List list;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return RefreshIndicator(
+      onRefresh: refresh,
+      child: ListView.builder(
         shrinkWrap: true,
         primary: false,
         itemCount: list.length,
@@ -303,7 +307,8 @@ class cardDataFirestore extends StatelessWidget {
               ),
             ),
           );
-        });
+        })
+    );
   }
 }
 
@@ -324,6 +329,7 @@ class _allEventsListStateScreen extends State<AllEventListScreen> {
 
   @override
   bool loadImage = true;
+  int random;
 
   @override
   void initState() {
@@ -336,23 +342,34 @@ class _allEventsListStateScreen extends State<AllEventListScreen> {
     });
   }
 
+  final GlobalKey<allEventsListState> _refreshEvents = new GlobalKey<allEventsListState>();
+
+  Future<void> _refresh() async {
+    _refreshEvents.currentState.build(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: this.appBar,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(bottom: 0.0),
-                child: AllEventList()
-              )
-            ]
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(bottom: 0.0),
+                  child: AllEventList(
+                    _refreshEvents
+                  )
+                )
+              ]
+            )
           )
         )
       )
@@ -363,16 +380,17 @@ class _allEventsListStateScreen extends State<AllEventListScreen> {
 class AllEventList extends StatefulWidget {
 
   EventOptions options = new EventOptions();
-  AllEventList([options]);
+  AllEventList(key, [options]) : super(key: key);
 
   @override
-  _allEventsListState createState() => _allEventsListState(options);
+  allEventsListState createState() => allEventsListState(options);
 }
 
-class _allEventsListState extends State<AllEventList> {
+class allEventsListState extends State<AllEventList> {
 
+  VoidCallback refreshQuery;
   EventOptions options = new EventOptions();
-  _allEventsListState([options]);
+  allEventsListState([options]);
 
   @override
   bool loadImage = true;
@@ -418,6 +436,9 @@ class _allEventsListState extends State<AllEventList> {
         """),
       ),
       builder: (Graphql.QueryResult result, { VoidCallback refetch, Graphql.FetchMore fetchMore }) {
+
+        refreshQuery = refetch;
+
         if (result.loading) {
           return _loadingDataHeader(context);
         } else if(result.hasException) {
@@ -428,8 +449,9 @@ class _allEventsListState extends State<AllEventList> {
           if (events.length == 0) {
             return _loadingDataHeader(context);
           } else {
-            return new cardDataFirestore(
+            return cardDataFirestore(
               list: events,
+              refresh: refetch
             );
           }
         }

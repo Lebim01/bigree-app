@@ -73,8 +73,6 @@ class _signUpState extends State<signUp> {
         selectedImage = tempImage;
         filename = basename(selectedImage.path);
         var image = uploadImage().toString();
-        print("THIS IS IMAGE " + image);
-
         retrieveLostData();
       });
     }
@@ -90,7 +88,6 @@ class _signUpState extends State<signUp> {
     var dowurl = await (await uploadTask.onComplete).ref.getDownloadURL();
     profilePicUrl = dowurl.toString();
     registerModel.image = profilePicUrl;
-    print("download url = $profilePicUrl");
     return profilePicUrl;
   }
 

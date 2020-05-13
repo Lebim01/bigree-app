@@ -31,7 +31,6 @@ class myAppState extends State<myApp> {
   String token;
 
   _setToken(_token){
-    print("El token cambio $_token");
     setState(() {
       token = _token;
     });
@@ -120,7 +119,6 @@ class _SplashScreenState extends State<SplashScreen> {
     subscription =
         connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       _connectionStatus = result.toString();
-      print(_connectionStatus);
       if (result == ConnectivityResult.wifi ||
           result == ConnectivityResult.mobile) {
         setState(() {
@@ -145,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen> {
     /// Setting Message Notification from firebase to user
     ///
     _messaging.getToken().then((token) {
-      print(token);
+     
     });
 
     @override
