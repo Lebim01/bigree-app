@@ -50,9 +50,20 @@ class myAppState extends State<myApp> {
       statusBarColor: Colors.transparent, //or set color with: Color(0xFF0000FF)
     ));
 
+    String typenameDataIdFromObject(Object object) {
+      if (object is Map<String, Object> &&
+          object.containsKey('__typename') &&
+          object.containsKey('id')) {
+        return "${object['__typename']}/${object['id']}";
+      }
+      return null;
+    }
+
     ValueNotifier<GraphQLClient> client = ValueNotifier(
       GraphQLClient(
-        cache: InMemoryCache(),
+        cache: NormalizedInMemoryCache(
+          dataIdFromObject: typenameDataIdFromObject,
+        ),
         link: myGraphql.link,
         
       ),
