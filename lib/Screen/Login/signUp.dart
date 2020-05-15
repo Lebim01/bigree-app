@@ -1,6 +1,7 @@
 import 'package:event_country/Library/loader_animation/loader.dart';
 import 'package:event_country/Library/loader_animation/dot.dart';
 import 'package:event_country/Screen/Bottom_Nav_Bar/bottomNavBar.dart';
+import 'package:event_country/Screen/Login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,8 @@ import '../../utils/lang/lang.dart' as Lang;
 import 'package:event_country/models/register_models.dart';
 import 'package:event_country/services/register_service.dart';
 import 'package:event_country/utils/widgets/alert.dart' as alert;
+import 'package:email_validator/email_validator.dart';
+import 'dart:convert';
 
 
 final lang = Lang.Lang();
@@ -32,16 +35,9 @@ class _signUpState extends State<signUp> {
   String filename;
   File tempImage;
   bool isLoading = false;
-  bool _guardando = false;
   final formKey = GlobalKey<FormState>();
-  String _email, _pass, _pass2, _name, _country, _city;
   var profilePicUrl;
-  TextEditingController signupEmailController = new TextEditingController();
-  TextEditingController signupCountryController = new TextEditingController();
-  TextEditingController signupCityController = new TextEditingController();
-  TextEditingController signupNameController = new TextEditingController();
-  TextEditingController signupPasswordController = new TextEditingController();
-  TextEditingController signupConfirmPasswordController = new TextEditingController();
+  String _pass2;
 
   RegisterModel registerModel = new RegisterModel(); 
   final productoService = RegisterServices();
@@ -243,7 +239,7 @@ class _signUpState extends State<signUp> {
                                           lang.signUp,
                                           style: TextStyle(
                                               fontSize: ScreenUtil.getInstance()
-                                                  .setSp(25),
+                                                  .setSp(50),
                                               fontFamily: "Sofia",
                                               fontWeight: FontWeight.w600,
                                               color: Colors.white,
@@ -365,11 +361,7 @@ class _signUpState extends State<signUp> {
                                                 fontWeight: FontWeight.w600)),
                                         TextFormField(
                                           initialValue: registerModel.name,
-                                          validator: (input) {
-                                            if (input.isEmpty) {
-                                              return 'Please input your name';
-                                            }
-                                          },
+                                          validator: (input) { return _inputVaidate(input , lang.name, false); },
                                           onSaved: (value) => registerModel.name = value,
                                           keyboardType: TextInputType.text,
                                           textCapitalization:
@@ -406,11 +398,10 @@ class _signUpState extends State<signUp> {
                                         TextFormField(
                                           validator: (input) {
                                             if (input.isEmpty) {
-                                              return 'Please input your country';
+                                              return lang.inputYour + lang.country.toLowerCase();
                                             }
                                           },
                                           onSaved: (value) => registerModel.country = value,
-                                          controller: signupCountryController,
                                           keyboardType: TextInputType.text,
                                           textCapitalization:
                                               TextCapitalization.words,
@@ -444,13 +435,9 @@ class _signUpState extends State<signUp> {
                                                 letterSpacing: .9,
                                                 fontWeight: FontWeight.w600)),
                                         TextFormField(
-                                          validator: (input) {
-                                            if (input.isEmpty) {
-                                              return 'Please input your city';
-                                            }
-                                          },
+                                          validator: (input) { return _inputVaidate(input , lang.city, false); },
                                           onSaved: (value) => registerModel.city = value,
-                                          controller: signupCityController,
+
                                           keyboardType: TextInputType.text,
                                           textCapitalization:
                                               TextCapitalization.words,
@@ -487,7 +474,10 @@ class _signUpState extends State<signUp> {
                                           initialValue: registerModel.username,
                                           validator: (input) {
                                             if (input.isEmpty) {
-                                              return 'Please input your email';
+                                              return lang.inputYour + lang.email.toLowerCase();
+                                            }
+                                            if (!EmailValidator.validate(input.toString())) {
+                                              return lang.inputInvalid;
                                             }
                                           },
                                           onSaved: (value) => registerModel.username = value,
@@ -525,19 +515,13 @@ class _signUpState extends State<signUp> {
                                         TextFormField(
                                           initialValue: registerModel.password,
                                           obscureText: _obscureTextSignup,
-                                          validator: (input) {
-                                            if (input.isEmpty) {
-                                              return 'Please input your password';
-                                            } if (input.length<8){
-                                                return 'Input more 8 character';
-                                            }
-                                          },
+                                          validator: (input) { return _inputVaidate(input , lang.password, true); },
                                           onSaved: (value) => registerModel.password = value,
                                           style: TextStyle(
                                               fontFamily: "WorkSofiaSemiBold",
                                               fontSize: 16.0,
                                               color: Colors.black45),
-                                          decoration: InputDecoration(
+                                          decoration: InputDecoration (
                                             border: InputBorder.none,
                                             icon: Icon(
                                               FontAwesomeIcons.lock,
@@ -548,16 +532,12 @@ class _signUpState extends State<signUp> {
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize: 16.0),
-                                            suffixIcon: GestureDetector(
-                                              onTap: () {
-                                                _toggleSignup();
-                                              },
-                                              child: Icon(
-                                                FontAwesomeIcons.eye,
-                                                size: 15.0,
-                                                color: Colors.black,
-                                              ),
-                                            ),
+                                            suffixIcon: IconButton (
+                                                onPressed: () { 
+                                                    _toggleSignup();
+                                                },
+                                                color : Colors.white,
+                                                icon : Icon( FontAwesomeIcons.eye, size: 18.0, color: Colors.black)),
                                           ),
                                         ),
                                         SizedBox(
@@ -572,16 +552,9 @@ class _signUpState extends State<signUp> {
                                                         .setSp(30),
                                                 letterSpacing: .9,
                                                 fontWeight: FontWeight.w600)),
-                                        TextFormField(
-                                          controller:
-                                              signupConfirmPasswordController,
-                                          obscureText:
+                                        TextFormField(obscureText:
                                               _obscureTextSignupConfirm,
-                                          validator: (input) {
-                                            if (input.isEmpty) {
-                                              return 'Please re-input your password';
-                                            }
-                                          },
+                                          validator: (input) { return _inputVaidate(input , lang.password, true); },
                                           onSaved: (input) => _pass2 = input,
                                           style: TextStyle(
                                               fontFamily: "WorkSofiaSemiBold",
@@ -598,16 +571,12 @@ class _signUpState extends State<signUp> {
                                             hintStyle: TextStyle(
                                                 fontFamily: "Sofia",
                                                 fontSize: 16.0),
-                                            suffixIcon: GestureDetector(
-                                              onTap: () {
-                                                _toggleSignupConfirm();
-                                              },
-                                              child: Icon(
-                                                FontAwesomeIcons.eye,
-                                                size: 15.0,
-                                                color: Colors.black,
-                                              ),
-                                            ),
+                                            suffixIcon: IconButton (
+                                                onPressed: () { 
+                                                    _toggleSignupConfirm();
+                                                },
+                                                color : Colors.white,
+                                                icon : Icon( FontAwesomeIcons.eye, size: 18.0, color: Colors.black)),
                                           ),
                                         ),
                                         SizedBox(
@@ -677,27 +646,37 @@ class _signUpState extends State<signUp> {
                                         try {
                                           formState.save();                                          
                                           if(registerModel.password != _pass2.toString().trim()){
-                                            alert.alert.mostrarAlert(context, 'Password do not match');
+                                            showDialogAlert(context, lang.passwordNotMatch, 'alert');
                                           } else {
                                             setState((){
                                               isLoading = true;
                                             });
 
-                                            _submit();
+                                            if(!formKey.currentState.validate()) return;
+      
+                                            formKey.currentState.save();
 
-                                            Navigator.of(context).pushReplacement(
-                                              PageRouteBuilder(pageBuilder: (_, __, ___) => new bottomNavBar())
-                                            );
+                                            if(registerModel.username != null && registerModel.password != null){
+                                                productoService.createRegister(registerModel).then((resp){
+                                                  Map<String, dynamic> data = jsonDecode(resp);                                                  
+                                                  
+                                                  if(data["data"]["register"] != null){
+                                                    _mostrarAlert(context, lang.ocurredSuccess, lang.verifyEmail, 'comprobado', true);
+                                                  } else { 
+                                                    _mostrarAlert(context, lang.ocurredProblem, data["errors"][0]["message"].toString() , 'interfaz', false);
+                                                  }
+                                              });
+                                            }
                                           }
                                         } catch (e) {
-                                            showDialogError(context, e.message);
+                                            showDialogAlert(context, e.message, 'interfaz');
                                         } finally {
                                             setState(() {
-                                            isLoading = false;
+                                              isLoading = false;
                                             });
                                         }
                                       } else {
-                                        showDialogError(context, "Please input all form");
+                                        showDialogAlert(context, lang.inputAll, 'alert');
                                       }
                                     },
                                     child: Center(
@@ -724,7 +703,7 @@ class _signUpState extends State<signUp> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             horizontalLine(),
-                            Text("Have Account?",
+                            Text(lang.haveAccount,
                                 style: TextStyle(
                                     fontSize: 13.0, fontFamily: "Sofia")),
                             horizontalLine()
@@ -784,33 +763,33 @@ class _signUpState extends State<signUp> {
     );
   }
 
-  void _submit() async { 
-    if(!formKey.currentState.validate()) return;
-      
-    formKey.currentState.save();
+  String _inputVaidate(String value, String name, bool isPassword){
+    if(value.isEmpty) {
+      return lang.inputYour + name.toLowerCase();
+    }
 
-    if(registerModel.username != null && registerModel.password != null){
-       productoService.createRegister(registerModel).then((resp){
-         if(resp){
-            _mostrarAlert(context, 'Success!', 'Evento creado', 'comprobado');
-         }
-          else { 
-            _mostrarAlert(context, 'Error!', 'Ha ocurrido un error', 'interfaz');
-         }
-       });
+    if(value.trim().isEmpty) {
+      return lang.inputInvalid;
+    }
+
+    if(isPassword){
+      if(value.length < 8){
+        return lang.passwordShort;
+      }
     }
   }
 
-  void showDialogError(context, text){
+  void showDialogAlert(context, String text, String img){
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Error"),
-          content: Text(text),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          title: Text(lang.ocurredProblem, textAlign: TextAlign.center),
+          content: Column( mainAxisSize: MainAxisSize.min, children: <Widget> [Text(text, textAlign: TextAlign.center), SizedBox(height: 20.0), image(img)]),
           actions: <Widget>[
             FlatButton(
-              child: Text("Close"),
+              child: Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -822,35 +801,34 @@ class _signUpState extends State<signUp> {
   }
 
 
-  void _mostrarAlert(context,String titulo, String text, String img){
+  void _mostrarAlert(context, String titulo, String text, String img, bool success){
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context){
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          title: Text('$titulo'),
-          content: Column(
+          title: Text(titulo, textAlign: TextAlign.center),
+          content: Column (
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-                Text('$text'),
-                SizedBox(height: 10.0),
-                image(img)
-              ],
-            ),
+            children: <Widget>[ Text(text, textAlign: TextAlign.center), SizedBox(height: 20.0), image(img)]),
             actions: <Widget>[
               FlatButton(
-                  child: Text('Ok'),
-                  onPressed: (){
-                    Navigator.of(context).pop();
-                    Navigator.pop(context);
-                  },
-                )
-            ],
+                  child: Text('OK'),
+                  onPressed: (){ 
+                    Navigator.of(context).pop(); 
+                    success ? _redirect(context) : null;
+                  })],
         );
       }
     );
   } 
+
+  void _redirect(context) {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(pageBuilder: (_, __, ___) => new login())
+    );
+  }
 
   Widget image(String img){
     return Image(

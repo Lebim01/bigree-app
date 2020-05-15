@@ -44,6 +44,19 @@ class Language {
   String repeatPassword; 
   String rememberMe;
   String signIn;
+  //input
+  String inputYour;
+  String inputAll;
+  String inputInvalid;
+  //error
+  String close;
+  String ocurredProblem;
+  //message
+  String haveAccount;
+  String passwordShort;
+  String passwordNotMatch;
+  String ocurredSuccess;
+  String verifyEmail;
 }
 
 class Lang implements Language {
@@ -89,6 +102,16 @@ class Lang implements Language {
     this.description = lang.description;
     this.date = lang.date;
     this.price = lang.price;
+    this.inputYour = lang.inputYour;
+    this.inputAll = lang.inputAll;
+    this.close = lang.close;
+    this.ocurredProblem = lang.ocurredProblem;
+    this.haveAccount = lang.haveAccount;
+    this.inputInvalid = lang.inputInvalid;
+    this.passwordShort = lang.passwordShort;
+    this.passwordNotMatch = lang.passwordNotMatch;
+    this.ocurredSuccess = lang.ocurredSuccess;
+    this.verifyEmail = lang.verifyEmail;
   }
 
   @override
@@ -198,4 +221,34 @@ class Lang implements Language {
 
   @override
   String price;
+
+  @override
+  String inputYour;
+
+  @override
+  String inputAll;
+
+  @override
+  String close;
+
+  @override
+  String ocurredProblem;
+
+  @override
+  String haveAccount;
+
+  @override
+  String inputInvalid;
+  
+  @override
+  String passwordShort;
+
+  @override
+  String passwordNotMatch;
+
+  @override
+  String ocurredSuccess;
+
+  @override
+  String verifyEmail;
 }
