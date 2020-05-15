@@ -194,6 +194,7 @@ class EventDetailScreen extends StatelessWidget {
                     location
                     image
                     date
+                    capacity
 
                     UserEvents {
                       User {

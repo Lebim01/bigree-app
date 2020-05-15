@@ -226,8 +226,6 @@ class _createEventState extends State<createEvent> {
         _fecha = picked.toString();
         _fecha = _fecha.substring(0, 10);
         _inputfieldDateController.text = _fecha;
-         print(_fecha);
-
       });
     }
   }

@@ -45,7 +45,6 @@ class _updateProfileState extends State<updateProfile> {
 
     setState(() {
       _image = image;
-      print('Image Path $_image');
     });
   }
 
@@ -57,7 +56,6 @@ class _updateProfileState extends State<updateProfile> {
     var dowurl = await (await uploadTask.onComplete).ref.getDownloadURL();
     profilePicUrl = dowurl.toString();
     setState(() {
-      print("Profile Picture uploaded");
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
     });

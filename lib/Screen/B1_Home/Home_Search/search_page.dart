@@ -129,6 +129,7 @@ class _searchPageState extends State<searchPage> {
                       location
                       image
                       date
+                      capacity
 
                       UserEvents {
                         User {

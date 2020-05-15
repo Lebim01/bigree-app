@@ -31,7 +31,6 @@ class myAppState extends State<myApp> {
   String token;
 
   _setToken(_token){
-    print("El token cambio $_token");
     setState(() {
       token = _token;
     });
@@ -50,9 +49,20 @@ class myAppState extends State<myApp> {
       statusBarColor: Colors.transparent, //or set color with: Color(0xFF0000FF)
     ));
 
+    String typenameDataIdFromObject(Object object) {
+      if (object is Map<String, Object> &&
+          object.containsKey('__typename') &&
+          object.containsKey('id')) {
+        return "${object['__typename']}/${object['id']}";
+      }
+      return null;
+    }
+
     ValueNotifier<GraphQLClient> client = ValueNotifier(
       GraphQLClient(
-        cache: InMemoryCache(),
+        cache: NormalizedInMemoryCache(
+          dataIdFromObject: typenameDataIdFromObject,
+        ),
         link: myGraphql.link,
         
       ),
@@ -109,7 +119,6 @@ class _SplashScreenState extends State<SplashScreen> {
     subscription =
         connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       _connectionStatus = result.toString();
-      print(_connectionStatus);
       if (result == ConnectivityResult.wifi ||
           result == ConnectivityResult.mobile) {
         setState(() {
@@ -134,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen> {
     /// Setting Message Notification from firebase to user
     ///
     _messaging.getToken().then((token) {
-      print(token);
+     
     });
 
     @override

@@ -30,7 +30,5 @@ class Event {
     this.dateFormated = DateFormat("dd 'de' MMMM yyyy").format(DateTime.parse(this.date));
     this.time = "";
     this.userEvents = event['UserEvents'].toList();
-
-    print(this.dateFormated);
   }
 }
