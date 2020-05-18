@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:event_country/models/evnets_models.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -6,22 +7,28 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 
-final String _url = 'http://datatecblocks.xyz:4004/graphql';
 
-final _getevent = '{events {id,title,description,price,date,image,location}}'; 
+final String _url = 'http://datatecblocks.xyz:4004/graphql';
+    final _getevent = '{events(own: true){id title description location date price image capacity CategoryId Category { name } }}'; 
 final String img = 'https://static2.bigstockphoto.com/0/9/1/large1500/190827454.jpg';
 
 class EventsServices{
  
-  Future<bool> createEevnet(EventModel evnet )async{
+  Future<bool> createEevnet(EventModel event, String token )async{
     try{
-      final url = '$_url?query=mutation{createEvent(title: "${evnet.title}",  description: "${evnet.description}", price: ${evnet.price}, location: "${evnet.location}", image: "$img", date: "${evnet.date}"){ id title description price location image date}}';
+      final url = '$_url?query=mutation{ createEvent( title: "${event.title}", description: "${event.description}", location: "${event.location}", date: "${event.date}", price: ${event.price}, image:"$img", capacity: ${event.capacity}, CategoryId: ${event.categoryId}, timeStart: "${event.timeStart}", timeEnd: "${event.timeEnd}", publicType: "${event.publicType}"){ title, description, location, date, price, image, capacity, CategoryId, timeStart, timeEnd, publicType}}';
 
-      final resp = await http.post(url);
+      final resp = await http.post(url, headers: {
+              'Content-type': 'application/json',
+              'Accept': 'application/json',
+              "Authorization": "JWT $token"
+             // HttpHeaders.authorizationHeader: "JWT " + token
+        
+      });
       final decodeData = json.decode(resp.body);
       
         if(resp.statusCode != 200 && resp.statusCode != 201){
-          print('algo salio mal');
+          print('aqui entro');
           return false;
         }
         return true;
@@ -36,17 +43,50 @@ class EventsServices{
 
 
 
- Future<List<EventModel>> getEvents()async{
+   Future<List<EventModel>> getEvents(token) async{
    final url = '$_url?query=$_getevent';
-   final resp = await http.get(url);
+   final resp = await http.get(url, headers: {
+     'Content-type': 'application/json',
+      'Accept': 'application/json',
+      "Authorization": "JWT $token"
+   });
 
-  final decodedData = json.decode(resp.body);
-  print(decodedData);
+     final decodedData = await json.decode(resp.body);
+     
+     final Map<String, dynamic> data = decodedData["data"];
+     final List<EventModel> eventos = new List();
+    
+     
+    if(decodedData == null) {
+      //return [];
+    }else{
+        data.forEach((i, even){
+     
+       //final evenTemp = new EventModel.fromJson(even);
+      // //   //  eventos.add(evenTemp);
+     
+        if(even == null){
 
-  return [];
+        }else{
+          final f = even.length;
+          //print(even);
+           for (var x = 0; x < f; x++) {
+             if(even[x] == null){
+
+             }else {
+                   final evenTemp = new EventModel.fromJson(even[x]);
+                    eventos.add(evenTemp);
+             }
+          
+           }
+          
+        }
+      
+        });
+    }
+    //print('eventso $eventos');
+    return eventos;
   
-
-
  }
 
 }
