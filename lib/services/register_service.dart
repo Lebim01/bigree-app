@@ -21,20 +21,20 @@ final _getregister = """{
 
 class RegisterServices{
  
-  Future<bool> createRegister(RegisterModel register) async {
+  Future<Object> createRegister(RegisterModel register) async {
+    String image = register.image.replaceAll("&", " ");
     
     try {
       final mutation = '?query=mutation {register(username : "${register.username}", password: "${register.password}", name: "${register.name}"){id}}';      
       final url = '$_url$mutation';
       final resp = await http.post(url);
-      //final decodeData = json.decode(resp.body);
+      final decodeData = json.decode(resp.body);
 
       if(resp.statusCode != 200 && resp.statusCode != 201){
-        print('algo salio mal');
-        return false;
+        return { "errors" : [{ "message" : "Ha ocurrido un problema con el servidor" }]};
       }
           
-      return true;
+      return json.encode(decodeData);
     
     } catch(e) {
       print('este es el error' + e);

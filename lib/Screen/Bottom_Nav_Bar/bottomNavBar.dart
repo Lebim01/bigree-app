@@ -22,12 +22,12 @@ class _bottomNavBarState extends State<bottomNavBar> {
           userId: widget.idUser,
         );
         Category(
-          userId: widget.idUser,
+          //userId: widget.idUser,
         );
         break;
       case 1:
         return new Category(
-          userId: widget.idUser,
+          //userId: widget.idUser,
         );
         break;
       case 2:

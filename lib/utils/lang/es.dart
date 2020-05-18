@@ -108,4 +108,34 @@ class Es implements Lang.Language {
 
   @override
   String price = 'Precio';
+
+  @override
+  String inputYour = 'Por favor, ingrese su ';
+
+  @override
+  String inputAll = 'Por favor, ingrese todos los campos ';
+
+  @override
+  String close = 'Cerrar';
+
+  @override
+  String ocurredProblem = '¡Ops! Ha ocurrido un problema';
+
+  @override
+  String ocurredSuccess = '¡Todo ha salido perfecto!';
+
+  @override
+  String haveAccount = '¿Tiene cuenta?';
+
+  @override
+  String inputInvalid = 'Entrada inválida';
+
+  @override
+  String passwordShort = 'Ingrese más de 8 carácteres';
+
+  @override
+  String passwordNotMatch = 'La contraseña no coincide';
+
+  @override
+  String verifyEmail = 'Verifica tú correo';
 }
