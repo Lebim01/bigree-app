@@ -1,28 +1,53 @@
+import 'dart:async';
+
 import 'package:event_country/Screen/B1_Home/Home_Search/search_page.dart';
 import 'package:event_country/Screen/B2_Category/Category_Place/Germany/germany.dart';
-import 'package:event_country/Screen/B2_Category/Category_Place/Netherland/netherland.dart';
-import 'package:event_country/Screen/B2_Category/Category_Place/UnitedState/unitedStates.dart';
 import 'package:flutter/material.dart';
-
-import 'Category_Place/Brazil/brazil.dart';
-import 'Category_Place/Paris/france.dart';
-
-import 'package:event_country/utils/widgets/searchEvent.dart' as SearchEventWidget;
+import 'package:graphql_flutter/graphql_flutter.dart' as Graphql;
+import 'package:event_country/graphql.dart' as myGraphql;
 import 'package:event_country/utils/lang/lang.dart' as Lang;
+import 'package:loading/indicator/ball_pulse_indicator.dart';
+import 'package:loading/loading.dart';
 
 final lang = Lang.Lang();
 
-class Category extends StatefulWidget {
-  String userId;
-  Category({this.userId});
+var _data;
 
+class Category extends StatefulWidget {
+  String token;
+  Category({this.token}); 
   _CategoryState createState() => _CategoryState();
+  
+}
+
+Future<String> getCategories() async {
+  Graphql.QueryOptions queryOptions = Graphql.QueryOptions(
+    documentNode: Graphql.gql("""
+        query categories {
+          categories {
+            id
+            name
+            image
+          }
+        }
+    """)
+  );
+
+  Graphql.QueryResult queryResult = await myGraphql.getGraphQLClient().query(queryOptions);
+  if(queryResult.hasException){
+    throw queryResult.exception.graphqlErrors[0].message;
+  }
+
+  _data = queryResult.data;
+  return queryResult.data.toString();
 }
 
 class _CategoryState extends State<Category> {
+
   @override
   Widget build(BuildContext context) {
-    /// Component appbar
+    getCategories();
+    
     var _appbar = AppBar(
       backgroundColor: Color(0xFFFFFFFF),
       elevation: 0.0,
@@ -56,84 +81,59 @@ class _CategoryState extends State<Category> {
         )
       ],
     );
+    
+    if(_data != null){
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _appbar,
+        body :  ListView.builder(
+          padding: const EdgeInsets.all(8),
+          itemCount: _data["categories"].length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              height: 180,
+              color: Colors.white,
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(PageRouteBuilder(
+                            pageBuilder: (_, __, ___) => new germany(
+                                  userId: widget.token,
+                                  nameAppbar: _data["categories"][index]["name"],
+                                )));
+                      },
+                      child: itemCard(
+                          image:  _data["categories"][index]["image"],
+                          title:  _data["categories"][index]["name"])),
+                ],
+              ),
+            
+            );
+          },
+        )      
+      );
+    } else {
+      Timer(Duration(seconds: 2), () {
+        setState(() {
+          _CategoryState();
+        });
+      });
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-
-      /// Calling variable appbar
-      appBar: _appbar,
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 5.0,
-            ),
-            InkWell(
-                onTap: () {
-                  Navigator.of(context).push(PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => new germany(
-                            userId: widget.userId,
-                            nameAppbar: "Germany",
-                          )));
-                },
-                child: itemCard(
-                    image: "assets/image/category_country/country2.png",
-                    title: "Germany")),
-            InkWell(
-                onTap: () {
-                  Navigator.of(context).push(PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => new brazil(
-                            userId: widget.userId,
-                          )));
-                },
-                child: itemCard(
-                  image: "assets/image/category_country/country3.png",
-                  title: "Brazil",
-                )),
-            InkWell(
-                onTap: () {
-                  Navigator.of(context).push(PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => new france(
-                            userId: widget.userId,
-                          )));
-                },
-                child: itemCard(
-                  image: "assets/image/category_country/country4.png",
-                  title: "France",
-                )),
-            //   itemCard(image: "assets/image/category_country/country5.png",title: "Paris",),
-            InkWell(
-                onTap: () {
-                  Navigator.of(context).push(PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => new netherland(
-                            userId: widget.userId,
-                          )));
-                },
-                child: itemCard(
-                  image: "assets/image/category_country/country1.png",
-                  title: "Netherlands",
-                )),
-            InkWell(
-                onTap: () {
-                  Navigator.of(context).push(PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => new unitedStates(
-                            userId: widget.userId,
-                          )));
-                },
-                child: itemCard(
-                  image: "assets/image/category_country/country6.png",
-                  title: "United State",
-                )),
-          ],
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _appbar,
+        body: SingleChildScrollView(
+          child: Center(child: Loading(indicator: BallPulseIndicator(), size: 150.0,color: Colors.purple[100]))
         ),
-      ),
-    );
+      );
+    }
   }
 }
 
-///
-/// Create item card
-///
 class itemCard extends StatelessWidget {
   String image, title;
   itemCard({this.image, this.title});
@@ -154,7 +154,7 @@ class itemCard extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(15.0)),
               image:
-                  DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
+                  DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
               boxShadow: [
                 BoxShadow(
                   color: Color(0xFFABABAB).withOpacity(0.7),
