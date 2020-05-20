@@ -50,7 +50,7 @@ class _buttonPay extends State<ButtonPay> {
       return Graphql.QueryOptions(
         documentNode: Graphql.gql("""
           {
-            asistEvent(idEvent: $idEvent){
+            assistEvent(idEvent: $idEvent){
               id
             }
           }
@@ -80,7 +80,7 @@ class _buttonPay extends State<ButtonPay> {
       return Graphql.MutationOptions(
         documentNode: Graphql.gql("""
           mutation {
-            asistEvent(idEvent: $idEvent){
+            assistEvent(idEvent: $idEvent){
               id
             }
           }
