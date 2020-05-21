@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_country/services/event_service.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:event_country/models/evnets_models.dart';
 
 import 'Manage_Event_Detail.dart';
 
@@ -20,40 +23,26 @@ class favorite extends StatefulWidget {
 }
 
 class _favoriteState extends State<favorite> {
-  bool checkMail = true;
-  String mail;
+  String token = '';
 
   SharedPreferences prefs;
 
-  Future<Null> _function() async {
-    SharedPreferences prefs;
-    prefs = await SharedPreferences.getInstance();
-    this.setState(() {
-      mail = prefs.getString("username") ?? '';
-    });
-  }
+  final events = new List<EventModel>();
+  EventModel eventModel = new EventModel();
 
-  ///
-  /// Get image data dummy from firebase server
-  ///
-  var imageNetwork = NetworkImage(
-      "https://firebasestorage.googleapis.com/v0/b/beauty-look.appspot.com/o/Artboard%203.png?alt=media&token=dc7f4bf5-8f80-4f38-bb63-87aed9d59b95");
-
-  ///
-  /// check the condition is right or wrong for image loaded or no
-  ///
   bool loadImage = true;
-
+  final eventsServices = new EventsServices();
   @override
   void initState() {
-    Timer(Duration(seconds: 3), () {
-      setState(() {
-        loadImage = false;
-      });
-    });
-    _function();
-    // TODO: implement initState
     super.initState();
+    cargarPref();
+  }
+
+  cargarPref() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    token = pref.getString('token');
+    print(token);
+    setState(() {});
   }
 
   Widget build(BuildContext context) {
@@ -75,494 +64,282 @@ class _favoriteState extends State<favorite> {
           ),
         ),
       ),
-      body: Container(
-        child: ListView(
-          children: <Widget>[
-            Padding(
-                padding: EdgeInsets.only(top: 0.0, bottom: 0.0),
-                child: StreamBuilder(
-                  stream: Firestore.instance
-                      .collection("users")
-                      .document(widget.uid)
-                      .collection('Join Event')
-                      .snapshots(),
-                  builder: (
-                    BuildContext ctx,
-                    AsyncSnapshot<QuerySnapshot> snapshot,
-                  ) {
-                    if (!snapshot.hasData) {
-                      return noItem();
-                    } else {
-                      if (snapshot.data.documents.isEmpty) {
-                        return noItem();
-                      } else {
-                        if (loadImage) {
-                          return _loadingDataList(
-                              ctx, snapshot.data.documents.length);
-                        } else {
-                          return new dataFirestore(
-                              list: snapshot.data.documents);
-                        }
-
-                        //  return  new noItem();
-                      }
-                    }
-                  },
-                )),
-            SizedBox(
-              height: 40.0,
-            )
-          ],
-        ),
-      ),
+      body: _getEvents(),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Colors.deepPurple,
-        onPressed: ()=> Navigator.pushNamed(context, 'createEvent'),
+        onPressed: () => Navigator.pushNamed(context, 'createEvent'),
       ),
     );
   }
-}
 
-Widget cardHeaderLoading(BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Container(
-      height: 500.0,
-      width: 275.0,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        color: Color(0xFF2C3B4F),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: Color(0xFF3B4659),
-        highlightColor: Color(0xFF606B78),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 320.0),
+  Widget _getEvents() {
+    return FutureBuilder(
+      future: eventsServices.getEvents(token),
+      //initialData: InitialData,
+      builder:
+          (BuildContext context, AsyncSnapshot<List<EventModel>> snapshot) {
+        if (!snapshot.hasData) {
+          return Container();
+        } else {
+          final events = snapshot.data;
+          //print(snapshot.data);
+          return ListView.builder(
+            itemCount: events.length,
+            itemBuilder: (context, i) => _loadingCard(context, events[i]),
+          );
+          //return Center(child: Text('${events[0]['id']}'));
+          //return Container();
+          // return loadingCard( context, );
+        }
+      },
+    );
+  }
+
+  Widget _crearItem(BuildContext context, EventModel events) {
+    return Dismissible(
+        key: UniqueKey(),
+        background: Container(
+          color: Colors.red,
+        ),
+        onDismissed: (direccion) {
+          //Borrar producto
+        },
+        child: Card(
           child: Column(
             children: <Widget>[
-              Container(
-                height: 17.0,
-                width: 70.0,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
-              ),
-              SizedBox(
-                height: 25.0,
-              ),
-              Container(
-                height: 20.0,
-                width: 150.0,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              Container(
-                height: 20.0,
-                width: 250.0,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              Container(
-                height: 20.0,
-                width: 150.0,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
+              ListTile(
+                title: Text('${events.title} - ${events.description}'),
+                subtitle: Text(events.id),
+                onTap: () => Navigator.pushNamed(context, 'createEvent',
+                    arguments: events),
               ),
             ],
           ),
-        ),
-      ),
-    ),
-  );
-}
-
-///
-///
-/// Calling imageLoading animation for set a list layout
-///
-///
-Widget _loadingDataList(BuildContext context, int panjang) {
-  return Container(
-    child: ListView.builder(
-      shrinkWrap: true,
-      primary: false,
-      padding: EdgeInsets.only(top: 0.0),
-      itemCount: panjang,
-      itemBuilder: (ctx, i) {
-        return loadingCard(ctx);
-      },
-    ),
-  );
-}
-
-Widget loadingCard(BuildContext ctx) {
-  return Padding(
-    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 20.0),
-    child: Container(
-      height: 250.0,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black12.withOpacity(0.1),
-                blurRadius: 3.0,
-                spreadRadius: 1.0)
-          ]),
-      child: Shimmer.fromColors(
-        baseColor: Colors.black38,
-        highlightColor: Colors.white,
-        child: Column(children: [
-          Container(
-            height: 165.0,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.black12,
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(10.0),
-                  topLeft: Radius.circular(10.0)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-              child: CircleAvatar(
-                  radius: 20.0,
-                  backgroundColor: Colors.black12,
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  )),
-            ),
-            alignment: Alignment.topRight,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        width: 220.0,
-                        height: 25.0,
-                        color: Colors.black12,
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 5.0)),
-                      Container(
-                        height: 15.0,
-                        width: 100.0,
-                        color: Colors.black12,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.9),
-                        child: Container(
-                          height: 12.0,
-                          width: 140.0,
-                          color: Colors.black12,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 13.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        height: 35.0,
-                        width: 55.0,
-                        color: Colors.black12,
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 8.0)),
-                      Container(
-                        height: 10.0,
-                        width: 55.0,
-                        color: Colors.black12,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )
-        ]),
-      ),
-    ),
-  );
-}
-
-class dataFirestore extends StatelessWidget {
-  dataFirestore({this.list});
-  final List<DocumentSnapshot> list;
-
-  @override
-  Widget build(BuildContext context) {
-    var textTheme = Theme.of(context).textTheme;
-    var imageOverlayGradient = DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: FractionalOffset.bottomCenter,
-          end: FractionalOffset.topCenter,
-          colors: [
-            const Color(0xFF000000),
-            const Color(0x00000000),
-            Colors.black,
-            Colors.black,
-            Colors.black,
-            Colors.black,
-          ],
-        ),
-      ),
-    );
-
-    return SizedBox.fromSize(
-//      size: const Size.fromHeight(410.0),
-        child: ListView.builder(
-      shrinkWrap: true,
-      primary: false,
-      padding: EdgeInsets.only(top: 0.0),
-      itemCount: list.length,
-      itemBuilder: (context, i) {
-        String _title = list[i].data['title'].toString();
-        String _date = list[i].data['date'].toString();
-        String _time = list[i].data['time'].toString();
-        String _img = list[i].data['imageUrl'].toString();
-        String _desc = list[i].data['desc1'].toString();
-        String _desc2 = list[i].data['desc2'].toString();
-        String _desc3 = list[i].data['desc3'].toString();
-        String _price = list[i].data['price'].toString();
-        String _category = list[i].data['category'].toString();
-        String _id = list[i].data['id'].toString();
-        String _place = list[i].data['place'].toString();
-        String _userID = list[i].data['user'].toString();
-
-        return Padding(
-          padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
-          child: InkWell(
-              onTap: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => new eventDetailFavorite(
-                            category: _category,
-                            description: _desc,
-                            description2: _desc2,
-                            description3: _desc3,
-                            price: _price,
-                            imageUrl: _img,
-                            index: list[i].reference,
-                            time: _time,
-                            date: _date,
-                            place: _place,
-                            title: _title,
-                            id: _id,
-                          ),
-                      transitionDuration: Duration(milliseconds: 600),
-                      transitionsBuilder:
-                          (_, Animation<double> animation, __, Widget child) {
-                        return Opacity(
-                          opacity: animation.value,
-                          child: child,
-                        );
-                      }),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black12.withOpacity(0.2),
-                            spreadRadius: 3.0,
-                            blurRadius: 10.0)
-                      ]),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Hero(
-                        tag: 'hero-tag-list-$_id',
-                        child: Material(
-                          child: Container(
-                            height: 165.0,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: NetworkImage(_img), fit: BoxFit.cover),
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(15.0),
-                                  topRight: Radius.circular(15.0)),
-                            ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 10.0, right: 10.0),
-                              child: InkWell(
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (_) => NetworkGiffyDialog(
-                                            image: Image.network(
-                                              "https://raw.githubusercontent.com/Shashank02051997/FancyGifDialog-Android/master/GIF's/gif14.gif",
-                                              fit: BoxFit.cover,
-                                            ),
-                                            title: Text('Cancel this event?',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontFamily: "Gotik",
-                                                    fontSize: 22.0,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                            description: Text(
-                                              "Are you sure you want to delete the event activity " +
-                                                  _title,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontFamily: "Popins",
-                                                  fontWeight: FontWeight.w300,
-                                                  color: Colors.black26),
-                                            ),
-                                            onOkButtonPressed: () {
-                                              Navigator.pop(context);
-                                              Firestore.instance
-                                                  .collection("JoinEvent")
-                                                  .document("user")
-                                                  .collection(_title)
-                                                  .document(_userID)
-                                                  .delete();
-
-                                              Firestore.instance.runTransaction(
-                                                  (transaction) async {
-                                                DocumentSnapshot snapshot =
-                                                    await transaction
-                                                        .get(list[i].reference);
-                                                await transaction
-                                                    .delete(snapshot.reference);
-                                                SharedPreferences prefs =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                                prefs.remove(_title);
-                                              });
-                                              Scaffold.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    "Cancel event " + _title),
-                                                backgroundColor: Colors.red,
-                                                duration: Duration(seconds: 3),
-                                              ));
-                                            },
-                                          ));
-                                },
-                                child: CircleAvatar(
-                                    radius: 20.0,
-                                    backgroundColor: Colors.white,
-                                    child: Icon(
-                                      Icons.delete,
-                                      color: Colors.black38,
-                                    )),
-                              ),
-                            ),
-                            alignment: Alignment.topRight,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10.0, right: 10.0, bottom: 13.0, top: 7.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(height: 5.0),
-                            Text(
-                              _title,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 17.0,
-                                  fontFamily: "Popins"),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 0.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Row(children: <Widget>[
-                                    Icon(
-                                      Icons.place,
-                                      size: 17.0,
-                                    ),
-                                    Container(
-                                        width: 120.0,
-                                        child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 8.0),
-                                            child: Text(
-                                              _place,
-                                              style: TextStyle(
-                                                  fontSize: 14.0,
-                                                  fontFamily: "popins",
-                                                  fontWeight: FontWeight.w400,
-                                                  color: Colors.black38),
-                                              overflow: TextOverflow.ellipsis,
-                                            )))
-                                  ]),
-                                  Row(children: <Widget>[
-                                    Icon(
-                                      Icons.timer,
-                                      size: 17.0,
-                                    ),
-                                    Container(
-                                        width: 140.0,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child: Text(
-                                            _date,
-                                            style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontFamily: "popins",
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black38),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ))
-                                  ]),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
-        );
-      },
-    ));
+        ));
   }
+
+  Widget _loadingCard(BuildContext ctx, EventModel event) {
+    return Padding(
+        padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 20.0),
+        child: InkWell(
+          onTap: () =>
+              Navigator.pushNamed(ctx, 'createEvent', arguments: event),
+          child: Container(
+            height: 250.0,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black12.withOpacity(0.1),
+                      blurRadius: 3.0,
+                      spreadRadius: 1.0)
+                ]),
+            child: Column(children: [
+              Container(
+                height: 165.0,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(10.0),
+                      topLeft: Radius.circular(10.0)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+                  child: InkWell(
+                    onTap: () {
+                      eventsServices.getEvent(token, event.id).then((value) {
+                        if (value == 0) {
+                          print('no tiene nada');
+                          _dialog(context, "Está seguro que desea cancelar este evento?");
+                        }
+                        if (value == 1) {
+                           _dialog(context, "Lo sentimos, este evento no puede ser cancelado");
+                        }
+                        if (value == 2) {
+                          print('solo tiene usuarios');
+                          _mostrarAlert(context);
+                        }
+                      });
+                      
+                    },
+                    child: CircleAvatar(
+                        radius: 20.0,
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.black38,
+                        )),
+                  ),
+                ),
+                alignment: Alignment.topRight,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            '${event.title}',
+                            style: TextStyle(
+                              fontFamily: "Popins",
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          Padding(padding: EdgeInsets.only(top: 5.0)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Row(children: <Widget>[
+                                Icon(
+                                  Icons.place,
+                                  size: 17.0,
+                                ),
+                                Container(
+                                    width: 120.0,
+                                    child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 3.0),
+                                        child: Text(
+                                          '${event.location}',
+                                          style: TextStyle(
+                                              fontSize: 14.0,
+                                              fontFamily: "popins",
+                                              fontWeight: FontWeight.w400,
+                                              color: Colors.black38),
+                                          overflow: TextOverflow.ellipsis,
+                                        )))
+                              ]),
+                              Row(children: <Widget>[
+                                Icon(
+                                  Icons.timer,
+                                  size: 17.0,
+                                ),
+                                Container(
+                                    width: 160.0,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 3.0),
+                                      child: Text(
+                                        '${event.timeStart.substring(0, 5)} - ${event.timeEnd.substring(0, 5)}',
+                                        style: TextStyle(
+                                            fontSize: 14.0,
+                                            fontFamily: "popins",
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black38),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ))
+                              ]),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ]),
+          ),
+        ));
+  }
+
+  _dialog(BuildContext context, string) {
+    return showDialog(
+        context: context,
+        builder: (_) => NetworkGiffyDialog(
+              image: Image.network(
+                "https://raw.githubusercontent.com/Shashank02051997/FancyGifDialog-Android/master/GIF's/gif14.gif",
+                fit: BoxFit.cover,
+              ),
+              title: Text(string,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: "Gotik",
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.w600)),
+              entryAnimation: EntryAnimation.TOP_RIGHT,
+              onOkButtonPressed: () {
+                // Navigator.pop(context);
+
+                // Scaffold.of(context).showSnackBar(SnackBar(
+                //   content: Text("Cancel event "),
+                //   backgroundColor: Colors.red,
+                //   duration: Duration(seconds: 3),
+                // ));
+              },
+            ));
+  }
+  void _mostrarAlert(BuildContext context){
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context){
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          title: Text('Ingrese el motivo por el cual desea cancelar este evento'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _createTitle()
+            ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Cancelar'),
+                onPressed: ()=> Navigator.of(context).pop(),
+              ),
+              FlatButton(
+                child: Text('Ok'),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+                )
+            ],
+        );
+      }
+    );
+  }
+
+  Widget _createTitle(){
+    return  TextFormField(
+      initialValue: eventModel.title,
+      keyboardType: TextInputType.text,
+      textCapitalization:
+      TextCapitalization.words,
+      maxLines: 4,
+      style: TextStyle(
+          fontFamily: "WorkSofiaSemiBold",
+          fontSize: 18.0,
+          color: Colors.black),
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        hintText: 'Ingrese el motivo',
+        hintStyle: TextStyle(
+            fontFamily: "Sofia",
+            fontSize: 15.0),
+      ),
+      /////get data
+      onSaved: (value) => eventModel.title = value,
+      validator: (value){
+        if(value.length < 3){
+          return 'Ingrese el titulo ';
+        }else return null;
+      },
+    );
+  }
+  
+
 }
 
-///
-///
-/// If no item cart this class showing
-///
 class noItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -595,6 +372,4 @@ class noItem extends StatelessWidget {
       ),
     );
   }
-
-  
 }
