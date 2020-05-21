@@ -12,6 +12,7 @@ class RegisterServices{
     try {      
       var mutation = '?query=mutation{register(username:"${register.username}",password:"${register.password}",name:"${register.name}",image:"$image",country:"${register.country}",city:"${register.city}"){status,message}}';  
       final url = "$_url$mutation";
+      print(url);
       final resp = await http.post(url);
       final decodeData = json.decode(resp.body);
 

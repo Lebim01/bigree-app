@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">bigree-app</string>
+    <string name="facebook_app_id">934102760360421</string>
+    <string name="fb_login_protocol_scheme">fb934102760360421</string>
+</resources>

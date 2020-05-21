@@ -20,6 +20,7 @@ import 'package:event_country/services/register_service.dart';
 import 'package:event_country/utils/widgets/alert.dart' as alert;
 import 'package:email_validator/email_validator.dart';
 import 'dart:convert';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 
 final lang = Lang.Lang();
@@ -30,12 +31,13 @@ class signUp extends StatefulWidget {
 }
 
 class _signUpState extends State<signUp> {
+  final _formKey = GlobalKey<FormState>();
   bool _isSelected = false;
   File selectedImage;
   String filename;
   File tempImage;
   bool isLoading = false;
-  final formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   var profilePicUrl;
   String _pass2;
 
@@ -219,7 +221,7 @@ class _signUpState extends State<signUp> {
                             padding: EdgeInsets.only(
                                 left: 0.0, right: 0.0, top: 0.0),
                             child: Form(
-                              key: formKey,
+                              key: _formKey,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
@@ -358,7 +360,7 @@ class _signUpState extends State<signUp> {
                                                 fontWeight: FontWeight.w600)),
                                         TextFormField(
                                           initialValue: registerModel.name,
-                                          validator: (input) { return _inputVaidate(input , lang.name, false); },
+                                          validator: (input) { return _inputValidate(input , lang.name, false); },
                                           onSaved: (value) => registerModel.name = value,
                                           keyboardType: TextInputType.text,
                                           textCapitalization:
@@ -432,9 +434,8 @@ class _signUpState extends State<signUp> {
                                                 letterSpacing: .9,
                                                 fontWeight: FontWeight.w600)),
                                         TextFormField(
-                                          validator: (input) { return _inputVaidate(input , lang.city, false); },
+                                          validator: (input) { return _inputValidate(input , lang.city, false); },
                                           onSaved: (value) => registerModel.city = value,
-
                                           keyboardType: TextInputType.text,
                                           textCapitalization:
                                               TextCapitalization.words,
@@ -512,7 +513,7 @@ class _signUpState extends State<signUp> {
                                         TextFormField(
                                           initialValue: registerModel.password,
                                           obscureText: _obscureTextSignup,
-                                          validator: (input) { return _inputVaidate(input , lang.password, true); },
+                                          validator: (input) { return _inputValidate(input , lang.password, true); },
                                           onSaved: (value) => registerModel.password = value,
                                           style: TextStyle(
                                               fontFamily: "WorkSofiaSemiBold",
@@ -551,7 +552,7 @@ class _signUpState extends State<signUp> {
                                                 fontWeight: FontWeight.w600)),
                                         TextFormField(obscureText:
                                               _obscureTextSignupConfirm,
-                                          validator: (input) { return _inputVaidate(input , lang.password, true); },
+                                          validator: (input) { return _inputValidate(input , lang.password, true); },
                                           onSaved: (input) => _pass2 = input,
                                           style: TextStyle(
                                               fontFamily: "WorkSofiaSemiBold",
@@ -588,35 +589,14 @@ class _signUpState extends State<signUp> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                            height: ScreenUtil.getInstance().setHeight(40)),
+                        SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                SizedBox(
-                                  width: 12.0,
-                                ),
-                                GestureDetector(
-                                  onTap: _radio,
-                                  child: radioButton(_isSelected),
-                                ),
-                                SizedBox(
-                                  width: 8.0,
-                                ),
-                                Text(
-                                    lang.rememberMe,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 12,
-                                        fontFamily: "Poppins-Medium"))
-                              ],
-                            ),
                             InkWell(
                               child: Container(
-                                width: ScreenUtil.getInstance().setWidth(330),
-                                height: ScreenUtil.getInstance().setHeight(100),
+                                width: ScreenUtil.getInstance().setWidth(600),
+                                height: ScreenUtil.getInstance().setHeight(90),
                                 decoration: BoxDecoration(
                                     gradient: LinearGradient(colors: [
                                       Color(0xFFD898F8),
@@ -637,7 +617,7 @@ class _signUpState extends State<signUp> {
                                       
                                       SharedPreferences prefs;
                                       prefs = await SharedPreferences.getInstance();
-                                      final formState = formKey.currentState;
+                                      final formState = _formKey.currentState;
                                       
                                       if (formState.validate()) {
                                         try {
@@ -649,21 +629,7 @@ class _signUpState extends State<signUp> {
                                               isLoading = true;
                                             });
 
-                                            if(!formKey.currentState.validate()) return;
-      
-                                            formKey.currentState.save();
-
-                                            if(registerModel.username != null && registerModel.password != null){
-                                                productoService.createRegister(registerModel).then((resp){
-                                                  Map<String, dynamic> data = jsonDecode(resp);                                                  
-                                                  
-                                                  if(data["data"]["register"] != null){
-                                                    _mostrarAlert(context, lang.ocurredSuccess, lang.verifyEmail, 'comprobado', true);
-                                                  } else { 
-                                                    _mostrarAlert(context, lang.ocurredProblem, data["errors"][0]["message"].toString() , 'interfaz', false);
-                                                  }
-                                              });
-                                            }
+                                            _savedData(context, 'email');
                                           }
                                         } catch (e) {
                                             showDialogAlert(context, e.message, 'interfaz');
@@ -684,7 +650,7 @@ class _signUpState extends State<signUp> {
                                               color: Colors.white,
                                               fontFamily: "Poppins-Bold",
                                               fontSize: 25,
-                                              letterSpacing: 1.0)),
+                                              letterSpacing: 4.0)),
                                           
                                     ),
                                   ),
@@ -693,38 +659,63 @@ class _signUpState extends State<signUp> {
                             )
                           ],
                         ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().setHeight(40),
-                        ),
-                        Row(
+                        SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+                        Row (
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            horizontalLine(),
-                            Text(lang.haveAccount,
-                                style: TextStyle(
-                                    fontSize: 13.0, fontFamily: "Sofia")),
-                            horizontalLine()
-                          ],
+                          Container(
+                            margin: EdgeInsets.only(right: 30.0),
+                            child : RaisedButton (
+                              onPressed: () { _loginWithFacebook(context); },
+                              textColor: Colors.white,
+                              padding: EdgeInsets.all(0.0),
+                              child: Container(
+                                width: ScreenUtil.getInstance().setWidth(80),
+                                height: ScreenUtil.getInstance().setHeight(90),
+                                decoration: BoxDecoration (
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  gradient: LinearGradient(
+                                    colors: <Color>[
+                                      Color(0xFF0D47A1),
+                                      Color(0xFF1976D2),
+                                      Color(0xFF42A5F5)])),
+                                padding: EdgeInsets.all(10.0),
+                                child: Icon(FontAwesomeIcons.facebook, size : 50)))),
+                          Container(
+                            margin: EdgeInsets.only(right: 0.0),
+                            child : RaisedButton (
+                              onPressed: () { _loginWithGoogle(); },
+                              textColor: Colors.white,
+                              padding: EdgeInsets.all(0.0),
+                              child: Container(
+                                width: ScreenUtil.getInstance().setWidth(80),
+                                height: ScreenUtil.getInstance().setHeight(90),
+                                decoration: BoxDecoration (
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  gradient: LinearGradient(
+                                    colors: <Color>[
+                                      Color(0xFF8C0404),
+                                      Color(0xFFFC2424),
+                                      Color(0xFFFC2424)])),
+                                padding: EdgeInsets.all(10.0),
+                                child: Icon(FontAwesomeIcons.googlePlus, size : 50))))],
                         ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().setHeight(30),
+                        SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+                        Row (
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[horizontalLine(), Text(lang.haveAccount, style: TextStyle(fontSize: 13.0, fontFamily: "Sofia")), horizontalLine()],
                         ),
+                        SizedBox(height: ScreenUtil.getInstance().setHeight(30)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[],
                         ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().setHeight(0),
-                        ),
-                        Row(
+                        SizedBox(height: ScreenUtil.getInstance().setHeight(0)),
+                        Row (
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             InkWell(
-                              onTap: () {
-                                Navigator.of(context).pushReplacement(
-                                    PageRouteBuilder(
-                                        pageBuilder: (_, __, ___) => login()));
-                              },
+                              onTap: () { Navigator.of(context).pushReplacement(PageRouteBuilder(pageBuilder: (_, __, ___) => login())); },
                               child: Container(
                                 height: 50.0,
                                 width: 300.0,
@@ -732,8 +723,7 @@ class _signUpState extends State<signUp> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(40.0)),
                                   border: Border.all(
-                                      color: Color(0xFFD898F8), width: 1.0),
-                                ),
+                                      color: Color(0xFFD898F8), width: 1.0)),
                                 child: Center(
                                   child: Text(
                                       lang.login,
@@ -742,15 +732,9 @@ class _signUpState extends State<signUp> {
                                           fontWeight: FontWeight.w300,
                                           letterSpacing: 1.4,
                                           fontSize:20.0,
-                                          fontFamily: "Sofia")),
-                                ),
-                              ),
-                            )
-                          ],
+                                          fontFamily: "Sofia")))))],
                         ),
-                        SizedBox(
-                          height: 40.0,
-                        ),
+                        SizedBox(height: 40.0),
                       ],
                     ),
                   ),
@@ -760,7 +744,67 @@ class _signUpState extends State<signUp> {
     );
   }
 
-  String _inputVaidate(String value, String name, bool isPassword){
+
+  void _savedData(context, String type){
+
+    switch(type){
+      case 'email' :
+        
+        if(!_formKey.currentState.validate()) return;
+        _formKey.currentState.save();
+      
+      break;
+      case 'facebook' : 
+        print("registrando por fb");
+      break;
+      case 'google' : 
+        print("registrando por google");
+      break;
+    }
+    
+    if(registerModel.username != null && registerModel.password != null){
+        productoService.createRegister(registerModel).then((resp){
+          Map<String, dynamic> data = jsonDecode(resp);                                                  
+          
+          if(data["data"]["register"] != null){
+            _mostrarAlert(context, lang.ocurredSuccess, lang.verifyEmail, 'comprobado', true);
+          } else { 
+            _mostrarAlert(context, lang.ocurredProblem, data["errors"][0]["message"].toString() , 'interfaz', false);
+          }
+      });
+    }
+  }
+
+  Future<FirebaseUser> _loginWithFacebook(context) async {
+    final facebookLogin = FacebookLogin();
+    final result = await facebookLogin.logIn(['email']);
+
+    if(result.status != FacebookLoginStatus.loggedIn){
+      return null;
+    }
+
+    final AuthCredential credential = FacebookAuthProvider.getCredential(
+      accessToken: result.accessToken.token,
+    );
+
+    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    
+    registerModel.username = user.email;
+    registerModel.image = user.photoUrl;
+    registerModel.name = user.displayName;
+    registerModel.password = user.uid;
+    
+    _savedData(context, 'facebook');
+    return user;
+  }
+
+  String _loginWithGoogle() {
+    print("hola2");
+
+    return 'hola2';
+  }
+
+  String _inputValidate(String value, String name, bool isPassword){
     if(value.isEmpty) {
       return lang.inputYour + name.toLowerCase();
     }
