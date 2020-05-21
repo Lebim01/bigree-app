@@ -11,13 +11,14 @@ import 'package:http/http.dart' as http;
 final String _url = 'http://datatecblocks.xyz:4004/graphql';
 final _getevent = '{events(own: true){id title description location date price image capacity CategoryId timeStart timeEnd publicType Category { name } }}'; 
 final _event = '{ id price UserEvents { id }}';
+final _cancelEvent = '{mutation { cancelEvent(id: 18){ title, status }}}';
 final String img = 'https://static2.bigstockphoto.com/0/9/1/large1500/190827454.jpg';
 
 class EventsServices{
  
   Future<bool> createEevnet(EventModel event, String token )async{
     try{
-      final url = '$_url?query=mutation{ createEvent( title: "${event.title}", description: "${event.description}", location: "${event.location}", date: "${event.date}", price: ${event.price}, image:"$img", capacity: ${event.capacity}, CategoryId: ${event.categoryId}, timeStart: "${event.timeStart}", timeEnd: "${event.timeEnd}", publicType: "${event.publicType}"){ title, description, location, date, price, image, capacity, CategoryId, timeStart, timeEnd, publicType}}';
+      final url = '$_url?query=mutation{ createEvent( title: "${event.title}", description: "${event.description}", location: "${event.location}", date: "${event.date}", price: ${event.price}, image:"${event.image}", capacity: ${event.capacity}, CategoryId: ${event.categoryId}, timeStart: "${event.timeStart}", timeEnd: "${event.timeEnd}", publicType: "${event.publicType}"){ title, description, location, date, price, image, capacity, CategoryId, timeStart, timeEnd, publicType}}';
 
       final resp = await http.post(url, headers: {
               'Content-type': 'application/json',
@@ -27,6 +28,7 @@ class EventsServices{
         
       });
       final decodeData = json.decode(resp.body);
+      print(decodeData);
       
         if(resp.statusCode != 200 && resp.statusCode != 201){
           print('aqui entro');
@@ -34,7 +36,7 @@ class EventsServices{
         }
         return true;
 
-       //print(decodeData);
+       
     }catch(e){
       print('este es el error' + e);
     }
@@ -119,6 +121,31 @@ class EventsServices{
       });
       //print(retu);
     return retu;
+  }
+  Future<String> cancelEvent(token, id, motivo) async {
+    final url = '$_url?query=mutation { cancelEvent(id: $id, reason: "$motivo"){ title,  status }}';
+    final resp = await http.post(url, headers: {
+      'Content-type': 'application/json',
+        'Accept': 'application/json',
+        "Authorization": "JWT $token"
+    });
+    final decodedData = await json.decode(resp.body);
+    final data = decodedData["data"];
+    final retorno = data["cancelEvent"];
+    if(data != null) return 'evento cancelado';
+    return retorno;
+  }
+
+  Future uploadImageEvent(token, image) async {
+    final url = '$_url?query=mutation { uploadPhotoEvent(image: "data:image/jpeg;base64,$image"){message, status}}';
+    final resp = await http.post(url, headers: {
+      'Content-type': 'application/json',
+        'Accept': 'application/json',
+        "Authorization": "JWT $token"
+    });
+    final decodedData = await json.decode(resp.body);
+    //final data = decodedData["data"];
+    //print(decodedData);
   }
 
 }

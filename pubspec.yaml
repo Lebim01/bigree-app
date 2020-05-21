@@ -43,12 +43,8 @@ dependencies:
   http:
   email_validator: ^1.0.0
   loading: ^1.0.2
-<<<<<<< HEAD
   flutter_facebook_login: ^3.0.0
-
-=======
   
->>>>>>> ab470ef988040a49ef37ada85795f31a175b9f05
 dev_dependencies:
   flutter_test:
     sdk: flutter
