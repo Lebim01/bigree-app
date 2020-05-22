@@ -1,10 +1,8 @@
 import 'package:event_country/Library/loader_animation/loader.dart';
 import 'package:event_country/Library/loader_animation/dot.dart';
-import 'package:event_country/Screen/Bottom_Nav_Bar/bottomNavBar.dart';
 import 'package:event_country/Screen/Login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -17,7 +15,6 @@ import 'login.dart';
 import '../../utils/lang/lang.dart' as Lang;
 import 'package:event_country/models/register_models.dart';
 import 'package:event_country/services/register_service.dart';
-import 'package:event_country/utils/widgets/alert.dart' as alert;
 import 'package:email_validator/email_validator.dart';
 import 'dart:convert';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
